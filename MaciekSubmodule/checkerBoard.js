@@ -21,7 +21,7 @@ function initializeBoard(realState){
 			} 
 		}
 	}
-	else
+	else	
 		state = realState;
 	
 	checkers.setState(state);
@@ -37,7 +37,7 @@ function handleMouseDown(e) {
 	var clicked = "";
 	for (var i = 0; i < checkers.pieces.length; i++) {
 		if (checkers.pieces[i].isPointInside(mouseX, mouseY)) {
-			clicked += checkers.pieces[i].x + " " +checkers.pieces[i].y;
+			clicked += checkers.pieces[i].id;
 		}
 	}
 	if (clicked.length > 0) {
@@ -101,7 +101,7 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
             {
                 if(!this.state[i][j] == 0)
                     this.pieces.push(new CheckersPiece(
-					"a1",
+					this.state[i][j]+"."+i+"."+j,
 					i*this.size + this.size*0.5,
 					j*this.size + this.size*0.5, 
 					this.size*0.30, 
