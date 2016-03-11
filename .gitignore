@@ -11,28 +11,28 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-#Netbeans
-nbproject/private/
-build/
-nbbuild/
-dist/
-nbdist/
-nbactions.xml
-.nb-gradle/
+# general
+*~
+*.log
+tmp
+dump
 
 # Eclipse
-.classpath
+.settings
+.cache
 .project
-.settings/
+.classpath
+.scala_dependencies
+bin
 
-# Intellij
-.idea/
-*.iml
-*.iws
+# SBT
+dist
+project/boot
+project/target
+project/plugins/target
+target
+.target
 
-# Mac
-.DS_Store
-
-# Maven
-log/
-target/
+# Play
+logs
+RUNNING_PID
