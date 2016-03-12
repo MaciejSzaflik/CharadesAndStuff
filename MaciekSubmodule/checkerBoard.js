@@ -267,7 +267,7 @@ function CheckerLogicKeeper()
 		
 		return list;
 	}
-	this.gA(x,y,currentState)
+	this.gA = function(x,y,currentState)
 	{
 		if(x<0 || x >= currentState.length)
 			return -1;
