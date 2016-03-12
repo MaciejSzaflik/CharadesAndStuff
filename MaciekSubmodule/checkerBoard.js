@@ -21,7 +21,7 @@ function initializeBoard(realState){
 function handleMouseDown(e) {
 	mouseX = parseInt(e.clientX);
 	mouseY = parseInt(e.clientY);
-
+		
 	var clicked = null;
 	for (var i = 0; i < checkers.pieces.length; i++) {
 		if (checkers.pieces[i].isPointInside(mouseX, mouseY)) {
@@ -31,8 +31,13 @@ function handleMouseDown(e) {
 	if (clicked != null) {
 		var result = checkersLogic.generateMoveListForChecker(clicked.logicX,clicked.logicY,checkers.state);
 		checkers.highlights = result;
-		//alert("Clicked piece: " + clicked);
-		
+		checkers.selectPiece = clicked;
+		redraw(mouseX,mouseY);
+	}
+	else
+	{
+		logicP = checkers.getLogicPoint(mouseX,mouseY);
+		checkers.tryToPerformMove(logicP["x"],logicP["y"]);
 		redraw(mouseX,mouseY);
 	}
 }
@@ -78,7 +83,7 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
     this.colorDark = "#000000";
     this.colorLight = "#FFFFFF";
 	
-	this.highlightColor = 'rgba(225,60,60,0.5)';
+	this.highlightColor = 'rgba(225,60,60,0.7)';
 	
 	this.colorDarkPiece = "#080900";
     this.colorLightPiece = "#FCCAF0";
@@ -90,13 +95,59 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
     this.state = null;
 	this.pieces = null;
     this.highlights = null;
+	this.selectPiece = null;
 	
     this.getInfo = function() {
        
     };
     
+	this.clicked = function(piece,moves)
+	{
+		this.selectPiece = piece;
+		this.highlights = move;
+	}
+	
+	this.tryToPerformMove = function(x,y)
+	{
+		var move = null;
+		if(this.selectPiece== null)
+			return;
+		for(var i = 0;i<this.highlights.length;i++)
+		{
+			if(this.highlights[i]["x"] == x && this.highlights[i]["y"] == y)
+			{
+				move = this.highlights[i];
+				break;
+			}
+		}
+		if(move == null)
+		{
+			this.clearHighlights();
+			return;
+		}
+		else	
+			this.performMove(move)
+	}
+	
+	this.performMove = function(move)
+	{
+		if(move["t"] == "m")
+		{
+			this.state[this.selectPiece.logicX][this.selectPiece.logicY] = 0;
+			this.state[move["x"]][move["y"]] = this.selectPiece.type;
+			this.setState(this.state);
+		}
+	}
+	
+	this.clearHighlights = function()
+	{
+		this.highlights = null;
+		this.selectPiece = null;
+	}
+	
 	this.setState = function(state)
 	{
+		this.clearHighlights();
 		this.pieces = [];
 		this.state = state;
 		for(var i = 0;i<this.numberOfRows;i++)
@@ -105,15 +156,21 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
             {
                 if(!this.state[i][j] == 0)
                     this.pieces.push(new CheckersPiece(
+					this.state[i][j],
 					this.state[i][j]+"."+i+"."+j,
 					i,
 					j,
-					i*this.size + this.size*0.5,
-					j*this.size + this.size*0.5, 
+					this.size,
 					this.size*0.30, 
 					this.state[i][j] == 1?this.colorLightPiece:this.colorDarkPiece, this.state[i][j] == 1?this.colorDarkPiece:this.colorLightPiece, 5));
             } 
         }	
+	}
+	this.getLogicPoint = function(rawX,rawY)
+	{
+		var x = Math.ceil(rawX/this.size);
+		var y = Math.ceil(rawY/this.size);
+		return {"x":--x,"y":--y};
 	}
 	
 	
@@ -178,9 +235,9 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
 }
 
 
-function CheckersPiece(id, logicX, logicY, x, y, size, fill, stroke, strokewidth) {
-	this.x = x;
-	this.y = y;
+function CheckersPiece(type, id, logicX, logicY, sizeOfBlock, size, fill, stroke, strokewidth) {
+	this.x = logicX*sizeOfBlock + sizeOfBlock*0.5;
+	this.y = logicY*sizeOfBlock + sizeOfBlock*0.5;
 	this.logicX = logicX;
 	this.logicY = logicY;
 	this.id = id;
@@ -188,7 +245,8 @@ function CheckersPiece(id, logicX, logicY, x, y, size, fill, stroke, strokewidth
 	this.fill = fill || "gray";
 	this.stroke = stroke || "red";
 	this.strokewidth = strokewidth || 1;
-	
+	this.sizeOfBlock = sizeOfBlock;
+	this.type = type;
 	
 	this.redraw = function (x, y) {
 		this.x = x || this.x
@@ -204,6 +262,17 @@ function CheckersPiece(id, logicX, logicY, x, y, size, fill, stroke, strokewidth
 		return (this);
 	}
 	
+	this.calculateX = function()
+	{
+		this.x = this.logicX*this.sizeOfBlock + this.sizeOfBlock*0.5;
+		return this.x;
+	}
+	this.calculateY = function()
+	{
+		this.y = this.logicY*this.sizeOfBlock + this.sizeOfBlock*0.5;
+		return this.y;
+	}
+	
 	this.draw = function (stroke) {
 		ctx.save();
 		ctx.beginPath();
@@ -211,7 +280,7 @@ function CheckersPiece(id, logicX, logicY, x, y, size, fill, stroke, strokewidth
 		ctx.strokeStyle = stroke;
 		ctx.lineWidth = this.strokewidth;
 		
-		ctx.arc( x, y , this.size, 0, Math.PI*2, true); 
+		ctx.arc( this.calculateX(), this.calculateY() , this.size, 0, Math.PI*2, true); 
 		ctx.closePath();
 		
 		ctx.stroke();
@@ -252,7 +321,7 @@ function CheckerLogicKeeper()
 			case 1:
 				return this.generateWhiteSimpleMove(x,y,currentState);
 			case 2:
-				return null;
+				return this.generateBlackSimpleMove(x,y,currentState);
 			case 3:
 				return null;
 			case 4: 
@@ -260,10 +329,25 @@ function CheckerLogicKeeper()
 				
 		}
 	}
+	
+	this.generateBlackSimpleMove = function(x,y,currentState) {
+		var list = [];
+		
+		if(this.gA(x-1,y+1,currentState) == 0)
+			list.push(this.cE(x-1,y+1,"m"));
+		if(this.gA(x-1,y-1,currentState) == 0)
+			list.push(this.cE(x-1,y-1,"m"));
+		
+		return list;
+	}	
+	
 	this.generateWhiteSimpleMove = function(x,y,currentState) {
 		var list = [];
 		
-		
+		if(this.gA(x+1,y+1,currentState) == 0)
+			list.push(this.cE(x+1,y+1,"m"));
+		if(this.gA(x+1,y-1,currentState) == 0)
+			list.push(this.cE(x+1,y-1,"m"));
 		
 		return list;
 	}
@@ -275,6 +359,10 @@ function CheckerLogicKeeper()
 			return -1;
 		else
 			return currentState[x][y];
+	}
+	this.cE = function(x,y,t)
+	{
+		return {"x":x,"y":y,"t":t};
 	}
 	
 }
