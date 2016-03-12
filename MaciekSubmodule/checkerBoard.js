@@ -1,5 +1,6 @@
 var numberOfRows = 8;
 var checkers = null;
+var checkersLogic = null;
 function initializeBoard(realState){
 	
 	
@@ -9,21 +10,8 @@ function initializeBoard(realState){
 	ctx = canvas.getContext('2d');
 	
 	checkers = new CheckerBoard("aaa",canvas.height / numberOfRows,ctx);
-	if(realState==null)
-	{
-		state = new Array(numberOfRows);
-		for(var i = 0;i<numberOfRows;i++)
-		{
-			state[i] = new Array(numberOfRows);
-			for(var j = 0;j<numberOfRows;j++)
-			{
-				state[i][j] = getRandomInt(0,2);
-			} 
-		}
-	}
-	else	
-		state = realState;
-	
+	checkersLogic = new CheckerLogicKeeper();
+	state = checkersLogic.generateStartingState();
 	checkers.setState(state);
 	redraw();
 	redrawPieces(-100,-100);
@@ -34,14 +22,18 @@ function handleMouseDown(e) {
 	mouseX = parseInt(e.clientX);
 	mouseY = parseInt(e.clientY);
 
-	var clicked = "";
+	var clicked = null;
 	for (var i = 0; i < checkers.pieces.length; i++) {
 		if (checkers.pieces[i].isPointInside(mouseX, mouseY)) {
-			clicked += checkers.pieces[i].id;
+			clicked = checkers.pieces[i];
 		}
 	}
-	if (clicked.length > 0) {
-		alert("Clicked piece: " + clicked);
+	if (clicked != null) {
+		var result = checkersLogic.generateMoveListForChecker(clicked.logicX,clicked.logicY,checkers.state);
+		checkers.highlights = result;
+		//alert("Clicked piece: " + clicked);
+		
+		redraw(mouseX,mouseY);
 	}
 }
 
@@ -51,9 +43,14 @@ function handleMouseMove(e) {
 	mouseY = parseInt(e.clientY);
 
 	redraw(mouseX,mouseY);
-	redrawPieces(mouseX,mouseY);
 }
-function redraw()
+function redraw(mouseX,mouseY)
+{
+	redrawBoard(mouseX,mouseY);
+	redrawPieces(mouseX,mouseY);
+	redrawHighlights()
+}
+function redrawBoard()
 {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	checkers.drawBoard( canvas.height / numberOfRows);   
@@ -61,6 +58,10 @@ function redraw()
 function redrawPieces(mouseX,mouseY)
 {
 	checkers.drawCurrent(mouseX,mouseY);
+}
+function redrawHighlights()
+{
+	checkers.drawHighLights();
 }
 function drawBoard(){
         
@@ -77,6 +78,8 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
     this.colorDark = "#000000";
     this.colorLight = "#FFFFFF";
 	
+	this.highlightColor = 'rgba(225,60,60,0.5)';
+	
 	this.colorDarkPiece = "#080900";
     this.colorLightPiece = "#FCCAF0";
 	
@@ -86,7 +89,8 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
     this.pieces = [];
     this.state = null;
 	this.pieces = null;
-    
+    this.highlights = null;
+	
     this.getInfo = function() {
        
     };
@@ -102,6 +106,8 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
                 if(!this.state[i][j] == 0)
                     this.pieces.push(new CheckersPiece(
 					this.state[i][j]+"."+i+"."+j,
+					i,
+					j,
 					i*this.size + this.size*0.5,
 					j*this.size + this.size*0.5, 
 					this.size*0.30, 
@@ -138,11 +144,28 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
             this.drawBlock(rowIndex, j);
         }
     }
+
+	this.drawHighLights = function (array)
+	{
+		if(array!=null)
+			this.highlight = array;
+		if(this.highlights==null)
+			return;
+		for(var i = 0;i<this.highlights.length;i++)
+			this.drawHighLight(this.highlights[i]["x"],this.highlights[i]["y"]);
+	}
+	
+	this.drawHighLight = function (rowIndex, columnIndex)
+	{
+		this.ctx.fillStyle = this.highlightColor;
+        this.ctx.fillRect(rowIndex * this.size, columnIndex * this.size, this.size, this.size);
+        this.ctx.stroke();  
+	}
+	
     this.drawBlock = function (rowIndex, columnIndex)
     {  
         this.ctx.fillStyle = this.getBlockColor(rowIndex, columnIndex);
         this.ctx.fillRect(rowIndex * this.size, columnIndex * this.size, this.size, this.size);
-     
         this.ctx.stroke();  
     }
     this.getBlockColor = function (rowIndex, columnIndex)
@@ -155,17 +178,20 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
 }
 
 
-function CheckersPiece(id, x, y, size, fill, stroke, strokewidth) {
+function CheckersPiece(id, logicX, logicY, x, y, size, fill, stroke, strokewidth) {
 	this.x = x;
 	this.y = y;
+	this.logicX = logicX;
+	this.logicY = logicY;
 	this.id = id;
 	this.size = size;
 	this.fill = fill || "gray";
 	this.stroke = stroke || "red";
 	this.strokewidth = strokewidth || 1;
 	
+	
 	this.redraw = function (x, y) {
-		this.x = x || this.x;
+		this.x = x || this.x
 		this.y = y || this.y;
 		this.draw(this.stroke);
 		return (this);
@@ -197,3 +223,78 @@ function CheckersPiece(id, x, y, size, fill, stroke, strokewidth) {
 		return (x >= this.x && x <= this.x + this.size && y >= this.y && y <= this.y + this.size);
 	}
 }
+
+function CheckerLogicKeeper()
+{
+	this.generateStartingState = function() {
+		var newState = new Array(numberOfRows);
+		for(var i = 0;i<numberOfRows;i++)
+		{
+			newState[i] = new Array(numberOfRows);
+			for(var j = 0;j<numberOfRows;j++)
+			{
+				var val = (i<5)?1:2;
+				val = (i == 3 || i == 4)?0:val;
+					if(i%2)
+						newState[i][j] =  j%2==1?val:0;
+					else 
+						newState[i][j] =  j%2==1?0:val;
+
+			} 
+		}
+		return newState;
+	}
+	this.generateMoveListForChecker = function(x,y,currentState) {
+		switch(currentState[x][y])
+		{
+			case 0:
+				return null;
+			case 1:
+				return this.generateWhiteSimpleMove(x,y,currentState);
+			case 2:
+				return null;
+			case 3:
+				return null;
+			case 4: 
+				return null;
+				
+		}
+	}
+	this.generateWhiteSimpleMove = function(x,y,currentState) {
+		var list = [];
+		
+		
+		
+		return list;
+	}
+	this.gA(x,y,currentState)
+	{
+		if(x<0 || x >= currentState.length)
+			return -1;
+		else if(y<0 || y >= currentState[x].length)
+			return -1;
+		else
+			return currentState[x][y];
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
