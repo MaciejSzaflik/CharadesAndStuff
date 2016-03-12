@@ -137,6 +137,13 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
 			this.state[move["x"]][move["y"]] = this.selectPiece.type;
 			this.setState(this.state);
 		}
+		else if(move["t"] == "s")
+		{
+			this.state[this.selectPiece.logicX][this.selectPiece.logicY] = 0;
+			this.state[move["x"]][move["y"]] = this.selectPiece.type
+			this.state[move["xs"]][move["ys"]] = 0;
+			this.setState(this.state);
+		}
 	}
 	
 	this.clearHighlights = function()
@@ -279,7 +286,6 @@ function CheckersPiece(type, id, logicX, logicY, sizeOfBlock, size, fill, stroke
 		ctx.fillStyle = this.fill;
 		ctx.strokeStyle = stroke;
 		ctx.lineWidth = this.strokewidth;
-		
 		ctx.arc( this.calculateX(), this.calculateY() , this.size, 0, Math.PI*2, true); 
 		ctx.closePath();
 		
@@ -337,7 +343,7 @@ function CheckerLogicKeeper()
 			list.push(this.cE(x-1,y+1,"m"));
 		if(this.gA(x-1,y-1,currentState) == 0)
 			list.push(this.cE(x-1,y-1,"m"));
-		
+		list = list.concat(this.checkStrike(x,y,currentState,1));
 		return list;
 	}	
 	
@@ -347,10 +353,25 @@ function CheckerLogicKeeper()
 		if(this.gA(x+1,y+1,currentState) == 0)
 			list.push(this.cE(x+1,y+1,"m"));
 		if(this.gA(x+1,y-1,currentState) == 0)
-			list.push(this.cE(x+1,y-1,"m"));
-		
+			list.push(this.cE(x+1,y-1,"m"));	
+		list = list.concat(this.checkStrike(x,y,currentState,2));
 		return list;
 	}
+	
+	this.checkStrike = function(x,y,currentState,enemyVal)
+	{
+		var list = [];
+		if(this.gA(x+1,y+1,currentState) == enemyVal && this.gA(x+2,y+2,currentState) == 0)
+			list.push(this.cE(x+2,y+2,"s",x+1,y+1));
+		if(this.gA(x+1,y-1,currentState) == enemyVal && this.gA(x+2,y-2,currentState) == 0)
+			list.push(this.cE(x+2,y-2,"s",x+1,y-1));
+		if(this.gA(x-1,y-1,currentState) == enemyVal && this.gA(x-2,y-2,currentState) == 0)
+			list.push(this.cE(x-2,y-2,"s",x-1,y-1));
+		if(this.gA(x-1,y+1,currentState) == enemyVal && this.gA(x-2,y+2,currentState) == 0)
+			list.push(this.cE(x-2,y+2,"s",x-1,y+1));
+		return list;
+	}
+	
 	this.gA = function(x,y,currentState)
 	{
 		if(x<0 || x >= currentState.length)
@@ -360,9 +381,9 @@ function CheckerLogicKeeper()
 		else
 			return currentState[x][y];
 	}
-	this.cE = function(x,y,t)
+	this.cE = function(x,y,t,xs,ys)
 	{
-		return {"x":x,"y":y,"t":t};
+		return {"x":x,"y":y,"t":t,"xs":xs,"ys":ys};
 	}
 	
 }
