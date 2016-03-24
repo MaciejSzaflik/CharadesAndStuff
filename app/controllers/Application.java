@@ -25,6 +25,10 @@ public class Application extends Controller {
     public static Result GO_DASHBOARD = redirect(
             routes.Dashboard.index()
     );
+    
+    public static Result GO_CHECKERS = redirect(
+            routes.CheckersGame.index()
+    );
 
     /**
      * Display the login page or dashboard if connected
@@ -44,7 +48,7 @@ public class Application extends Controller {
             }
         }
 
-        return ok(index.render(form(Register.class), form(Login.class)));
+        return ok(index.render(form(Register.class), form(Login.class), form(Checkers.class)));
     }
 
     /**
@@ -76,6 +80,16 @@ public class Application extends Controller {
                 return Messages.get("account.not.validated.check.mail");
             }
             return null;
+        }
+
+    }
+    
+    public static class Checkers {
+
+
+        public Result validate() {
+            System.out.println("afa");
+            return GO_CHECKERS;
         }
 
     }
@@ -124,15 +138,23 @@ public class Application extends Controller {
      */
     public Result authenticate() {
         Form<Login> loginForm = form(Login.class).bindFromRequest();
+        
+        Form<Checkers> checkersForm = form(Checkers.class).bindFromRequest();
 
         Form<Register> registerForm = form(Register.class);
 
         if (loginForm.hasErrors()) {
-            return badRequest(index.render(registerForm, loginForm));
+            return badRequest(index.render(registerForm, loginForm,checkersForm));
         } else {
             session("email", loginForm.get().email);
             return GO_DASHBOARD;
         }
+    }
+    
+    public Result goToCheckers(){
+        Form<Checkers> checkersForm = form(Checkers.class).bindFromRequest();
+        return GO_CHECKERS;
+
     }
 
     /**

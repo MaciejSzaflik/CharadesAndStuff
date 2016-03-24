@@ -5,8 +5,10 @@
 # Home page
 GET     /                           controllers.Application.index()
 GET     /dashboard                  controllers.Dashboard.index()
+GET     /checkersBoard              controllers.CheckersGame.index()
 
 POST    /login                      controllers.Application.authenticate()
+POST    /checkers                   controllers.Application.goToCheckers()
 GET     /logout                     controllers.Application.logout()
 
 GET     /settings                   controllers.account.settings.Index.index()

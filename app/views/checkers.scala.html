@@ -1,0 +1,19 @@
+@(checkersForm: Form[Application.Checkers])
+
+@import helper._
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.render) }
+
+<h3>Go to checkers</h3>
+
+@form(routes.Application.goToCheckers(), 'class -> "form") {
+
+    @if(checkersForm.hasGlobalErrors) {
+        <p class="error">
+            <span class="label label-danger">pffff</span>
+        </p>
+    }
+
+    <div class="form-actions">
+        <input type="submit" class="btn btn-primary" value="Go Now">
+    </div>
+}
