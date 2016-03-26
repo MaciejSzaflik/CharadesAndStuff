@@ -27,23 +27,32 @@ function initializeBoard(realState){
 
 function addStringInHistoryDiv(move)
 {
-	gameHistory.push(move);
+	gameHistory.push( "Client: " + JSON.stringify(move));
+	
+	$.ajax({
+            type :  "POST",
+			contentType : "application/json",
+            dataType: 'text',
+            data: JSON.stringify(move),
+            url  :  "/move",
+            success: function(data){
+                console.log(data);
+				gameHistory.push("Server: " + data);
+				refreshGameHistory();
+            },
+			
+			error: function(request,error) {
+                console.log(error);
+            }
+        });
+}
+function refreshGameHistory()
+{
 	document.getElementById('history').innerHTML = "Game Log:";
 	for(var i = 0; i<gameHistory.length;i++)
 	{
-		document.getElementById('history').innerHTML += '<br>'+JSON.stringify(gameHistory[i]);	
+		document.getElementById('history').innerHTML += '<br>'+ gameHistory[i];	
 	}
-	$.ajax({
-            type :  "POST",
-            dataType: 'json',
-            data: {
-                'filter': "John Portella"
-            },
-            url  :  "@routes.CheckersGame.move()",
-            success: function(data){
-                console.log("fuck");
-            }
-        });
 }
 
 

@@ -5,10 +5,17 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 import views.html.checkersBoard.index;
+import com.fasterxml.jackson.databind.JsonNode;
 
 
 public class CheckersGame extends Controller {
 
+    public enum  MoveType{
+        m,
+        s
+    }
+    
+    
     public Result index() {
         return ok(index.render());
     }
@@ -19,7 +26,33 @@ public class CheckersGame extends Controller {
     }
     
     public Result move() {
-        return ok();
+        JsonNode data = request().body().asJson();
+        if(data == null){
+            System.out.println("null");
+            return ok();
+        } else {
+            System.out.println("Got data: "+data);
+            return ok((new CheckersMove(data)).toString());
+        }
+        
+    }
+    
+    public class CheckersMove{
+        public MoveType moveType;
+        public int x;
+        public int y;
+        public int xs;
+        public int ys;
+        
+        public CheckersMove(JsonNode node)
+        {
+            this.x = node.get("x").intValue();
+            this.y = node.get("y").intValue();
+        }
+        
+        public String toString(){
+            return String.format("x is: %1$d || y is %1$d !!!! wow" , x, y);
+        }
     }
     
    /* 
