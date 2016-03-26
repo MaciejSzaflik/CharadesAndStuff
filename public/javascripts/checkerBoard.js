@@ -1,27 +1,60 @@
 var numberOfRows = 8;
 var checkers = null;
 var checkersLogic = null;
+var gameHistory = [];
 function initializeBoard(realState){
 	
 	
 	canvas = document.getElementById('checkers');
+	
+	var parent = document.getElementById("canvasParent");
+	canvas.width = parent.offsetWidth;
+	canvas.height = parent.offsetHeight;
+	
+	
 	canvas.addEventListener('click', handleMouseDown, false);
 	canvas.addEventListener('mousemove', handleMouseMove, false);
 	ctx = canvas.getContext('2d');
 	
-	checkers = new CheckerBoard("aaa",canvas.height / numberOfRows,ctx);
+	checkers = new CheckerBoard("aaa",parent.offsetWidth / numberOfRows,ctx);
 	checkersLogic = new CheckerLogicKeeper();
 	state = checkersLogic.generateStartingState();
 	checkers.setState(state);
+	checkers.onMovePerfomed = addStringInHistoryDiv;
 	redraw();
 	redrawPieces(-100,-100);
 }
 
+function addStringInHistoryDiv(move)
+{
+	gameHistory.push(move);
+	document.getElementById('history').innerHTML = "Game Log:";
+	for(var i = 0; i<gameHistory.length;i++)
+	{
+		document.getElementById('history').innerHTML += '<br>'+JSON.stringify(gameHistory[i]);	
+	}
+	$.ajax({
+            type :  "POST",
+            dataType: 'json',
+            data: {
+                'filter': "John Portella"
+            },
+            url  :  "@routes.CheckersGame.move()",
+            success: function(data){
+                console.log("fuck");
+            }
+        });
+}
+
 
 function handleMouseDown(e) {
-	mouseX = parseInt(e.clientX);
-	mouseY = parseInt(e.clientY);
-		
+	
+	var element = document.getElementById('checkers');
+	var offsets = element.getBoundingClientRect();
+	mouseX = parseInt(e.clientX) - offsets.left;
+	mouseY = parseInt(e.clientY) - offsets.top;
+	
+	
 	var clicked = null;
 	for (var i = 0; i < checkers.pieces.length; i++) {
 		if (checkers.pieces[i].isPointInside(mouseX, mouseY)) {
@@ -44,8 +77,10 @@ function handleMouseDown(e) {
 
 
 function handleMouseMove(e) {
-	mouseX = parseInt(e.clientX);
-	mouseY = parseInt(e.clientY);
+	var element = document.getElementById('checkers');
+	var offsets = element.getBoundingClientRect();
+	mouseX = parseInt(e.clientX) - offsets.left;
+	mouseY = parseInt(e.clientY) - offsets.top;
 
 	redraw(mouseX,mouseY);
 }
@@ -58,7 +93,7 @@ function redraw(mouseX,mouseY)
 function redrawBoard()
 {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	checkers.drawBoard( canvas.height / numberOfRows);   
+	checkers.drawBoard( canvas.width / numberOfRows);   
 }
 function redrawPieces(mouseX,mouseY)
 {
@@ -96,6 +131,7 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
 	this.pieces = null;
     this.highlights = null;
 	this.selectPiece = null;
+	this.onMovePerfomed = null;
 	
     this.getInfo = function() {
        
@@ -125,8 +161,11 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
 			this.clearHighlights();
 			return;
 		}
-		else	
-			this.performMove(move)
+		else
+		{			
+			if(this.performMove(move) && this.onMovePerfomed!=null);
+				this.onMovePerfomed(move);
+		}
 	}
 	
 	this.performMove = function(move)
@@ -136,6 +175,8 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
 			this.state[this.selectPiece.logicX][this.selectPiece.logicY] = 0;
 			this.state[move["x"]][move["y"]] = this.selectPiece.type;
 			this.setState(this.state);
+			
+			return true;
 		}
 		else if(move["t"] == "s")
 		{
@@ -143,6 +184,8 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
 			this.state[move["x"]][move["y"]] = this.selectPiece.type
 			this.state[move["xs"]][move["ys"]] = 0;
 			this.setState(this.state);
+			
+			return true;	
 		}
 	}
 	
@@ -192,6 +235,7 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
     };
     
     this.drawBoard = function(blockSize) {  
+		
         this.size = blockSize;
         for(var i = 0; i < this.numberOfRows; i++)
         {
@@ -295,7 +339,7 @@ function CheckersPiece(type, id, logicX, logicY, sizeOfBlock, size, fill, stroke
 	}
 
 	this.isPointInside = function (x, y) {
-		return (x >= this.x && x <= this.x + this.size && y >= this.y && y <= this.y + this.size);
+		return (x >= this.x -this.size && x <= this.x + this.size && y >= this.y - this.size && y <= this.y + this.size);
 	}
 }
 
