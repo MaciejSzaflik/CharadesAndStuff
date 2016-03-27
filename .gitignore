@@ -1,4 +1,4 @@
-
+	
 # Created by https://www.gitignore.io/api/playframework,java
 
 ### PlayFramework ###
@@ -17,6 +17,19 @@ server.pid
 *.eml
 /dist/
 .cache
+RUNNING_PID
+.classpath
+build.sbt
+.project
+
+dist
+project/boot
+project/target
+project/plugins/target
+target
+.target
+
+logs
 
 
 ### Java ###

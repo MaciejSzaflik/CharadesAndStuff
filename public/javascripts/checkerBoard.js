@@ -25,26 +25,35 @@ function initializeBoard(realState){
 	redrawPieces(-100,-100);
 }
 
-function addStringInHistoryDiv(move)
+function post(where,what,onSuccess,onError)
 {
-	gameHistory.push( "Client: " + JSON.stringify(move));
-	
 	$.ajax({
             type :  "POST",
 			contentType : "application/json",
-            dataType: 'text',
-            data: JSON.stringify(move),
-            url  :  "/move",
-            success: function(data){
-                console.log(data);
-				gameHistory.push("Server: " + data);
+            dataType:  "text",
+            data: what,
+            url  :  where,
+            success: function(data)
+			{
+				data = JSON.parse(data);
+				onSuccess(data);
+			},
+			error: onError
+        });
+}
+
+function addStringInHistoryDiv(move)
+{
+	gameHistory.push( "Client: " + JSON.stringify(move));
+	post("/move",
+			JSON.stringify(move),
+			function(data){
+				gameHistory.push("Server: " + JSON.stringify(move));
 				refreshGameHistory();
             },
-			
-			error: function(request,error) {
+			function(request,error) {
                 console.log(error);
-            }
-        });
+            });
 }
 function refreshGameHistory()
 {

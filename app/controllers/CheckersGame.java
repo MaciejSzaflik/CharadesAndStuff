@@ -1,21 +1,20 @@
 package controllers;
 
 import models.User;
+import models.CheckersModel;
+import models.CheckersMove;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
+import play.mvc.BodyParser;
 import views.html.checkersBoard.index;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import play.libs.Json;
 
 
 public class CheckersGame extends Controller {
 
-    public enum  MoveType{
-        m,
-        s
-    }
-    
-    
     public Result index() {
         return ok(index.render());
     }
@@ -25,35 +24,30 @@ public class CheckersGame extends Controller {
         return ok(index.render());
     }
     
+    public Result initGame()
+    {
+        int[][] boardState = CheckersModel.getStartState();
+        String playerId = CheckersModel.generateNewUUID();
+        return ok();
+    }
+    
+    @BodyParser.Of(BodyParser.Json.class)
     public Result move() {
         JsonNode data = request().body().asJson();
         if(data == null){
             System.out.println("null");
             return ok();
         } else {
-            System.out.println("Got data: "+data);
-            return ok((new CheckersMove(data)).toString());
+            String info = (new CheckersMove(data)).toString();
+            ObjectNode result = Json.newObject();
+            result.put("data", info);
+            
+            return ok(result);
         }
         
     }
     
-    public class CheckersMove{
-        public MoveType moveType;
-        public int x;
-        public int y;
-        public int xs;
-        public int ys;
-        
-        public CheckersMove(JsonNode node)
-        {
-            this.x = node.get("x").intValue();
-            this.y = node.get("y").intValue();
-        }
-        
-        public String toString(){
-            return String.format("x is: %1$d || y is %1$d !!!! wow" , x, y);
-        }
-    }
+    
     
    /* 
     
