@@ -3,39 +3,62 @@ var checkers = null;
 var checkersLogic = null;
 var gameHistory = [];
 function initializeBoard(realState){
+		
+	sendSomething(
+		"GET",
+		"/initCheckersGame",
+		null,
+		function(data){createCheckers(data);},
+		function(request,error) {console.log(error);});
+		
+	canvas = document.getElementById('checkers');
+	ctx = canvas.getContext('2d');
 	
+	
+}
+
+
+function parseBoardState(data)
+{
+	var parsed = JSON.parse("[" + data + "]")
+	return parsed[0];
+}
+
+function createCheckers(data)
+{
+	data = JSON.parse(data);
+	boardState = parseBoardState(data["state"])
 	
 	canvas = document.getElementById('checkers');
 	
 	var parent = document.getElementById("canvasParent");
 	canvas.width = parent.offsetWidth;
 	canvas.height = parent.offsetHeight;
-	
+	checkers = new CheckerBoard("aaa",parent.offsetWidth / numberOfRows,ctx);
+	checkersLogic = new CheckerLogicKeeper();
+	state = boardState;
+	checkers.setState(state);
+	checkers.onMovePerfomed = addStringInHistoryDiv;
+	redraw();
+	redrawPieces(-100,-100);
 	
 	canvas.addEventListener('click', handleMouseDown, false);
 	canvas.addEventListener('mousemove', handleMouseMove, false);
 	ctx = canvas.getContext('2d');
 	
-	checkers = new CheckerBoard("aaa",parent.offsetWidth / numberOfRows,ctx);
-	checkersLogic = new CheckerLogicKeeper();
-	state = checkersLogic.generateStartingState();
-	checkers.setState(state);
-	checkers.onMovePerfomed = addStringInHistoryDiv;
-	redraw();
-	redrawPieces(-100,-100);
 }
 
-function post(where,what,onSuccess,onError)
+
+function sendSomething(type,where,what,onSuccess,onError)
 {
 	$.ajax({
-            type :  "POST",
+            type :  type,
 			contentType : "application/json",
             dataType:  "text",
             data: what,
             url  :  where,
             success: function(data)
 			{
-				data = JSON.parse(data);
 				onSuccess(data);
 			},
 			error: onError
@@ -45,9 +68,10 @@ function post(where,what,onSuccess,onError)
 function addStringInHistoryDiv(move)
 {
 	gameHistory.push( "Client: " + JSON.stringify(move));
-	post("/move",
+	sendSomething("POST","/move",
 			JSON.stringify(move),
 			function(data){
+				data = JSON.parse(data);
 				gameHistory.push("Server: " + JSON.stringify(move));
 				refreshGameHistory();
             },
@@ -66,6 +90,9 @@ function refreshGameHistory()
 
 
 function handleMouseDown(e) {
+	
+	if(checkers==null)
+		return;
 	
 	var element = document.getElementById('checkers');
 	var offsets = element.getBoundingClientRect();
@@ -95,6 +122,10 @@ function handleMouseDown(e) {
 
 
 function handleMouseMove(e) {
+	
+	if(checkers==null)
+		return;
+	
 	var element = document.getElementById('checkers');
 	var offsets = element.getBoundingClientRect();
 	mouseX = parseInt(e.clientX) - offsets.left;
@@ -363,24 +394,6 @@ function CheckersPiece(type, id, logicX, logicY, sizeOfBlock, size, fill, stroke
 
 function CheckerLogicKeeper()
 {
-	this.generateStartingState = function() {
-		var newState = new Array(numberOfRows);
-		for(var i = 0;i<numberOfRows;i++)
-		{
-			newState[i] = new Array(numberOfRows);
-			for(var j = 0;j<numberOfRows;j++)
-			{
-				var val = (i<5)?1:2;
-				val = (i == 3 || i == 4)?0:val;
-					if(i%2)
-						newState[i][j] =  j%2==1?val:0;
-					else 
-						newState[i][j] =  j%2==1?0:val;
-
-			} 
-		}
-		return newState;
-	}
 	this.generateMoveListForChecker = function(x,y,currentState) {
 		switch(currentState[x][y])
 		{

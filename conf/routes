@@ -8,6 +8,7 @@ GET     /dashboard                  controllers.Dashboard.index()
 GET     /checkersBoard              controllers.CheckersGame.index()
 GET     /test                       controllers.CheckersGame.test()
 POST    /move                       controllers.CheckersGame.move()
+GET     /initCheckersGame           controllers.CheckersGame.initGame()
 
 POST    /login                      controllers.Application.authenticate()
 POST    /checkers                   controllers.Application.goToCheckers()

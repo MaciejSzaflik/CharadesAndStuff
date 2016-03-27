@@ -11,6 +11,7 @@ import views.html.checkersBoard.index;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.libs.Json;
+import java.util.Arrays;
 
 
 public class CheckersGame extends Controller {
@@ -27,8 +28,24 @@ public class CheckersGame extends Controller {
     public Result initGame()
     {
         int[][] boardState = CheckersModel.getStartState();
+        
         String playerId = CheckersModel.generateNewUUID();
-        return ok();
+        
+        ObjectNode result = Json.newObject();
+        result.put("uuid", playerId);
+        result.put("state",stateTableToString(boardState));
+        return ok(result);
+    }
+    
+    
+    private String stateTableToString(int [][] state)
+    {
+        String[] toReturn = new String[state.length];
+        for(int i =0;i<state.length;i++)
+        {
+            toReturn[i] = Arrays.toString(state[i]);
+        }
+        return Arrays.toString(toReturn);
     }
     
     @BodyParser.Of(BodyParser.Json.class)
