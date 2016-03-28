@@ -28,8 +28,8 @@ public class ChekersResponse {
 	public ChekersResponse(String gameId,String white,String black,boolean isWhiteTurn,int[][] state)
 	{
 		this.gameId = gameId;
-		this.black = black;
-		this.white = white;
+		this.black = black.replace("\"", "").replace("\\", "");
+		this.white = white.replace("\"", "").replace("\\", "");
 		this.isWhiteTurn = isWhiteTurn;
 		this.gameState = state;
 	}
@@ -45,6 +45,25 @@ public class ChekersResponse {
         
 		return result;
 	}
+	
+	public void performeMoveOnMe(CheckersMove move)
+	{
+		if(move.moveType == CheckersMove.MoveType.m)
+		{
+			this.gameState[move.fx][move.fy] = 0;
+			this.gameState[move.x][move.y] = move.p;
+		}
+		else if(move.moveType == CheckersMove.MoveType.s)
+		{
+			this.gameState[move.fx][move.fy] = 0;
+			this.gameState[move.x][move.y] = move.p;
+			this.gameState[move.xs][move.ys] = 0;
+		}
+	}
+	
+	
+	
+	
 	
 	public void saveToDatabase()
 	{
@@ -76,8 +95,10 @@ public class ChekersResponse {
 	
 	private static ChekersResponse loadFromFile(String path)
 	{
+		path = path.replace("\"","");
+		System.out.println("loading game id: "  + path);
 		try {
-			String content = readFile(path + ".txt", Charset.defaultCharset());
+			String content = readFile(path.replace("\"","") + ".txt", Charset.defaultCharset());
 			
 			System.out.println("Reading constent:" + content);
 			JsonNode alfa = Json.parse(content);			
@@ -108,8 +129,11 @@ public class ChekersResponse {
 	
 	private void saveToFile()
 	{
+		this.gameId = this.gameId.replace("\"", "");
+		this.gameId = this.gameId.replace("\\", "");
+		System.out.println("Saving game id: "  + this.gameId);
 		try {
-			PrintWriter outputFile= new PrintWriter(new FileWriter(this.gameId.replace("\"", "") +".txt"));
+			PrintWriter outputFile= new PrintWriter(new FileWriter(this.gameId +".txt"));
 			outputFile.println(this.toJSONReponse().toString());
 			outputFile.close();
 		} catch (IOException e) {

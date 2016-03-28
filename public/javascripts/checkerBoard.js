@@ -31,7 +31,7 @@ function parseBoardState(data)
 function createCheckers(data)
 {
 	data = JSON.parse(data);
-	boardState = parseBoardState(data["gameState"])
+	boardState = parseBoardState(data["gameState"]);
 	
 	canvas = document.getElementById('checkers');
 	
@@ -49,6 +49,20 @@ function createCheckers(data)
 	canvas.addEventListener('click', handleMouseDown, false);
 	canvas.addEventListener('mousemove', handleMouseMove, false);
 	ctx = canvas.getContext('2d');
+	
+	var val = JSON.stringify({"gameIdInfo" : gameIdVal});
+	window.setInterval(function(){
+		sendSomething(
+		"POST",
+		"/getGameState",
+		val,
+		function(data){
+			data = JSON.parse(data);
+			boardState = parseBoardState(data["gameState"]);
+			checkers.setState(boardState);
+			},
+		function(request,error) {console.log(error);});
+	}, 200);
 	
 }
 
@@ -73,10 +87,10 @@ function addStringInHistoryDiv(move)
 {
 	gameHistory.push( "Client: " + JSON.stringify(move));
 	sendSomething("POST","/move",
-			JSON.stringify(move),
+			JSON.stringify({"gameIdInfo" : gameIdVal ,"move" : move}),
 			function(data){
-				data = JSON.parse(data);
-				gameHistory.push("Server: " + JSON.stringify(move));
+				//data = JSON.parse(data);
+				//gameHistory.push("Server: " + JSON.stringify(move));
 				refreshGameHistory();
             },
 			function(request,error) {
@@ -223,12 +237,13 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
 	
 	this.performMove = function(move)
 	{
+		
 		if(move["t"] == "m")
 		{
 			this.state[this.selectPiece.logicX][this.selectPiece.logicY] = 0;
 			this.state[move["x"]][move["y"]] = this.selectPiece.type;
 			this.setState(this.state);
-			
+			this.clearHighlights();
 			return true;
 		}
 		else if(move["t"] == "s")
@@ -237,7 +252,7 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
 			this.state[move["x"]][move["y"]] = this.selectPiece.type
 			this.state[move["xs"]][move["ys"]] = 0;
 			this.setState(this.state);
-			
+			this.clearHighlights();
 			return true;	
 		}
 	}
@@ -250,7 +265,6 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
 	
 	this.setState = function(state)
 	{
-		this.clearHighlights();
 		this.pieces = [];
 		this.state = state;
 		for(var i = 0;i<this.numberOfRows;i++)
@@ -419,9 +433,9 @@ function CheckerLogicKeeper()
 		var list = [];
 		
 		if(this.gA(x-1,y+1,currentState) == 0)
-			list.push(this.cE(x-1,y+1,"m"));
+			list.push(this.cE(x-1,y+1,"m",0,0,x,y,this.gA(x,y,currentState)));
 		if(this.gA(x-1,y-1,currentState) == 0)
-			list.push(this.cE(x-1,y-1,"m"));
+			list.push(this.cE(x-1,y-1,"m",0,0,x,y,this.gA(x,y,currentState)));
 		list = list.concat(this.checkStrike(x,y,currentState,1));
 		return list;
 	}	
@@ -430,9 +444,9 @@ function CheckerLogicKeeper()
 		var list = [];
 		
 		if(this.gA(x+1,y+1,currentState) == 0)
-			list.push(this.cE(x+1,y+1,"m"));
+			list.push(this.cE(x+1,y+1,"m",0,0,x,y,this.gA(x,y,currentState)));
 		if(this.gA(x+1,y-1,currentState) == 0)
-			list.push(this.cE(x+1,y-1,"m"));	
+			list.push(this.cE(x+1,y-1,"m",0,0,x,y,this.gA(x,y,currentState)));	
 		list = list.concat(this.checkStrike(x,y,currentState,2));
 		return list;
 	}
@@ -441,13 +455,13 @@ function CheckerLogicKeeper()
 	{
 		var list = [];
 		if(this.gA(x+1,y+1,currentState) == enemyVal && this.gA(x+2,y+2,currentState) == 0)
-			list.push(this.cE(x+2,y+2,"s",x+1,y+1));
+			list.push(this.cE(x+2,y+2,"s",x+1,y+1,x,y,this.gA(x,y,currentState)));
 		if(this.gA(x+1,y-1,currentState) == enemyVal && this.gA(x+2,y-2,currentState) == 0)
-			list.push(this.cE(x+2,y-2,"s",x+1,y-1));
+			list.push(this.cE(x+2,y-2,"s",x+1,y-1,x,y,this.gA(x,y,currentState)));
 		if(this.gA(x-1,y-1,currentState) == enemyVal && this.gA(x-2,y-2,currentState) == 0)
-			list.push(this.cE(x-2,y-2,"s",x-1,y-1));
+			list.push(this.cE(x-2,y-2,"s",x-1,y-1,x,y,this.gA(x,y,currentState)));
 		if(this.gA(x-1,y+1,currentState) == enemyVal && this.gA(x-2,y+2,currentState) == 0)
-			list.push(this.cE(x-2,y+2,"s",x-1,y+1));
+			list.push(this.cE(x-2,y+2,"s",x-1,y+1,x,y,this.gA(x,y,currentState)));
 		return list;
 	}
 	
@@ -460,9 +474,9 @@ function CheckerLogicKeeper()
 		else
 			return currentState[x][y];
 	}
-	this.cE = function(x,y,t,xs,ys)
+	this.cE = function(x,y,t,xs,ys,fx,fy,p)
 	{
-		return {"x":x,"y":y,"t":t,"xs":xs,"ys":ys};
+		return {"x":x,"y":y,"t":t,"xs":xs,"ys":ys,"fx":fx,"fy":fy,"p":p};
 	}
 	
 }

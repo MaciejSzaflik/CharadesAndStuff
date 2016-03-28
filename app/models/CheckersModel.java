@@ -25,7 +25,19 @@ public class CheckersModel extends Model {
     	ChekersResponse response = decideGameState(gameId);
     	response.saveToDatabase();
 		return response;
+    }
+    public static ChekersResponse getGameState(String gameId){
     	
+    	ChekersResponse response = decideGameState(gameId);
+		return response;
+    }
+    
+    public static ChekersResponse performoveTheMove(String gameId,CheckersMove move)
+    {
+    	ChekersResponse response = ChekersResponse.loadFromdatabase(gameId);
+    	response.performeMoveOnMe(move);
+    	response.saveToDatabase();
+		return response;
     }
     
     private static ChekersResponse decideGameState(String gameId)
@@ -38,7 +50,7 @@ public class CheckersModel extends Model {
     		else
     			return response;
     	}
-    	return new ChekersResponse(gameId, generateNewUUID(), null, true, getStartState());
+    	return new ChekersResponse(gameId, "a", "b", true, getStartState());
     }
     
     private static boolean checkKey(String key)

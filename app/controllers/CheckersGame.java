@@ -47,8 +47,10 @@ public class CheckersGame extends Controller {
     public Result getGameState()
     {
     	 JsonNode data = request().body().asJson();
-    	 String gameId = data.get("gameId").textValue();
-    	 return ok();
+    	 String gameId = data.get("gameIdInfo").textValue();
+    	 
+    	 ChekersResponse response = CheckersModel.getGameState(gameId);
+    	 return ok(response.toJSONReponse());
     }
     
     
@@ -69,11 +71,9 @@ public class CheckersGame extends Controller {
             System.out.println("null");
             return ok();
         } else {
-            String info = (new CheckersMove(data)).toString();
-            ObjectNode result = Json.newObject();
-            result.put("data", info);
-            
-            return ok(result);
+  
+            ChekersResponse response = CheckersModel.performoveTheMove(data.get("gameIdInfo").toString(), new CheckersMove(data.get("move")));
+            return ok(response.toJSONReponse());
         }
         
     }
