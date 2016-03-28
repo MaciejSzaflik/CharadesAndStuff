@@ -2,14 +2,16 @@ var numberOfRows = 8;
 var checkers = null;
 var checkersLogic = null;
 var gameHistory = [];
-var gameId = "";
+var gameIdVal = "";
 function initializeBoard(initGameID){
 		
-	gameId = initGameID;
+	gameIdVal = initGameID;
+	var val = JSON.stringify({"gameIdInfo" : gameIdVal});
+	console.log(val);
 	sendSomething(
-		"GET",
+		"POST",
 		"/initCheckersGame",
-		null,
+		val,
 		function(data){createCheckers(data);},
 		function(request,error) {console.log(error);});
 		
@@ -29,7 +31,7 @@ function parseBoardState(data)
 function createCheckers(data)
 {
 	data = JSON.parse(data);
-	boardState = parseBoardState(data["state"])
+	boardState = parseBoardState(data["gameState"])
 	
 	canvas = document.getElementById('checkers');
 	

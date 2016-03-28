@@ -3,6 +3,7 @@ package controllers;
 import models.User;
 import models.CheckersModel;
 import models.CheckersMove;
+import models.ChekersResponse;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -27,17 +28,19 @@ public class CheckersGame extends Controller {
         return ok(index.render(this.gameId));
     }
     
+    @BodyParser.Of(BodyParser.Json.class)
     public Result initGame()
     {
-        int[][] boardState = CheckersModel.getStartState();
-        
-        String playerId = CheckersModel.generateNewUUID();
-        
-        ObjectNode result = Json.newObject();
-        result.put("uuid", playerId);
-        result.put("white", playerId);
-        result.put("state",stateTableToString(boardState));
-        return ok(result);
+    	JsonNode data = request().body().asJson();
+        if(data == null){
+            System.out.println("Game id is null!!!");
+            return ok();
+        }
+        String gameId = data.get("gameIdInfo").textValue();
+    	
+        ChekersResponse response = CheckersModel.getInitialResponse(gameId);
+        System.out.println("Recived init:"+ gameId + " " + response.toJSONReponse().toString());
+        return ok(response.toJSONReponse());
     }
     
     @BodyParser.Of(BodyParser.Json.class)

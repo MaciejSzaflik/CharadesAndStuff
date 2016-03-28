@@ -1,13 +1,61 @@
 package models;
 
 import com.avaje.ebean.Model;
+
+import java.io.File;
 import java.util.UUID;
 
 public class CheckersModel extends Model {
-    private static final int numberOfRows = 8;
+	
+	public enum GameState{
+        NewGame,
+        JoinToGame,
+        Spectator
+    }
+	
+	
+    public static final int numberOfRows = 8;
     
     public static String generateNewUUID(){
         return UUID.randomUUID().toString();
+    }
+    
+    public static ChekersResponse getInitialResponse(String gameId){
+    	
+    	ChekersResponse response = decideGameState(gameId);
+    	response.saveToDatabase();
+		return response;
+    	
+    }
+    
+    private static ChekersResponse decideGameState(String gameId)
+    {
+    	if(checkKey(gameId))
+    	{
+    		ChekersResponse response = ChekersResponse.loadFromdatabase(gameId);
+    		if(response.white !=null && response.black!=null)
+    			return response;
+    		else
+    			return response;
+    	}
+    	return new ChekersResponse(gameId, generateNewUUID(), null, true, getStartState());
+    }
+    
+    private static boolean checkKey(String key)
+    {
+    	//pfffffffffffffffffffff
+    	return fileExistanceCheck(key);
+    }
+    private static boolean fileExistanceCheck(String key)
+    {
+    	File f = new File(key + ".txt");
+    	return f.exists();
+    }
+    
+    public static ChekersResponse tryingToPlay(String gameId)
+    {
+		return null;
+    	
     }
     
     public static int[][] getStartState(){
