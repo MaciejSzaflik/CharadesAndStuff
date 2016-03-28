@@ -1,3 +1,4 @@
+@(gameId: String)
 <head>
         <meta charset="utf-8" />
         <title>Checkers board</title>
@@ -9,7 +10,8 @@
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/font-awesome.min.css")">
 </head>
-    <body onload='initializeBoard();'>
+	<h5>Game Id: @gameId</h5>
+    <body onload='initializeBoard("@gameId");'>
         <div class="container">
            
         <div class="row">

@@ -8,21 +8,23 @@ import play.mvc.Result;
 import play.mvc.Security;
 import play.mvc.BodyParser;
 import views.html.checkersBoard.index;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import play.cache.Cache;
 import play.libs.Json;
+
 import java.util.Arrays;
 
 
 public class CheckersGame extends Controller {
 
+	public String gameId = "wat";
+	
     public Result index() {
-        return ok(index.render());
-    }
-    
-    public Result test() {
-        System.out.println("alfa");
-        return ok(index.render());
+    	this.gameId = (String) Cache.get("gameId");
+        return ok(index.render(this.gameId));
     }
     
     public Result initGame()
@@ -33,8 +35,17 @@ public class CheckersGame extends Controller {
         
         ObjectNode result = Json.newObject();
         result.put("uuid", playerId);
+        result.put("white", playerId);
         result.put("state",stateTableToString(boardState));
         return ok(result);
+    }
+    
+    @BodyParser.Of(BodyParser.Json.class)
+    public Result getGameState()
+    {
+    	 JsonNode data = request().body().asJson();
+    	 String gameId = data.get("gameId").textValue();
+    	 return ok();
     }
     
     

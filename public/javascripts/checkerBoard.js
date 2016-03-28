@@ -2,8 +2,10 @@ var numberOfRows = 8;
 var checkers = null;
 var checkersLogic = null;
 var gameHistory = [];
-function initializeBoard(realState){
+var gameId = "";
+function initializeBoard(initGameID){
 		
+	gameId = initGameID;
 	sendSomething(
 		"GET",
 		"/initCheckersGame",
@@ -33,7 +35,7 @@ function createCheckers(data)
 	
 	var parent = document.getElementById("canvasParent");
 	canvas.width = parent.offsetWidth;
-	canvas.height = parent.offsetHeight;
+	canvas.height = parent.offsetHeight;	
 	checkers = new CheckerBoard("aaa",parent.offsetWidth / numberOfRows,ctx);
 	checkersLogic = new CheckerLogicKeeper();
 	state = boardState;

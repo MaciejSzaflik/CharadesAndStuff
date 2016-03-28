@@ -1,4 +1,4 @@
-@(checkersForm: Form[Application.Checkers])
+@(gameIdForm: Form[Application.GameId])
 
 @import helper._
 @implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.render) }
@@ -7,12 +7,22 @@
 
 @form(routes.Application.goToCheckers(), 'class -> "form") {
 
-    @if(checkersForm.hasGlobalErrors) {
+    @if(gameIdForm.hasGlobalErrors) {
         <p class="error">
             <span class="label label-danger">pffff</span>
         </p>
     }
 
+	<fieldset>
+        @inputText(
+            gameIdForm("gameId"),
+            'placeholder -> "gameID",
+            '_label -> "Game ID:",
+            '_help -> "Put down some game id",
+            'class -> "form-control"
+        )
+    </fieldset>   
+	
     <div class="form-actions">
         <input type="submit" class="btn btn-primary" value="Go Now">
     </div>

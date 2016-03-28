@@ -3,13 +3,13 @@ package controllers;
 import models.User;
 import models.utils.AppException;
 import play.Logger;
+import play.cache.Cache;
 import play.data.Form;
 import play.data.validation.Constraints;
 import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.index;
-
 import static play.data.Form.form;
 
 /**
@@ -48,7 +48,7 @@ public class Application extends Controller {
             }
         }
 
-        return ok(index.render(form(Register.class), form(Login.class), form(Checkers.class)));
+        return ok(index.render(form(Register.class), form(Login.class), form(GameId.class)));
     }
 
     /**
@@ -84,12 +84,13 @@ public class Application extends Controller {
 
     }
     
-    public static class Checkers {
+    public static class GameId {
 
+    	@Constraints.Required
+        public String gameId;
 
         public Result validate() {
-            System.out.println("afa");
-            return GO_CHECKERS;
+            return null;
         }
 
     }
@@ -139,7 +140,7 @@ public class Application extends Controller {
     public Result authenticate() {
         Form<Login> loginForm = form(Login.class).bindFromRequest();
         
-        Form<Checkers> checkersForm = form(Checkers.class).bindFromRequest();
+        Form<GameId> checkersForm = form(GameId.class).bindFromRequest();
 
         Form<Register> registerForm = form(Register.class);
 
@@ -152,8 +153,9 @@ public class Application extends Controller {
     }
     
     public Result goToCheckers(){
-        Form<Checkers> checkersForm = form(Checkers.class).bindFromRequest();
-        return GO_CHECKERS;
+        Form<GameId> checkersForm = form(GameId.class).bindFromRequest();
+        Cache.set("gameId",checkersForm.get().gameId);
+        return redirect(routes.CheckersGame.index());
 
     }
 
