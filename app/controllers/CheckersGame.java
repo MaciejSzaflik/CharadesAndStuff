@@ -21,7 +21,7 @@ import java.util.Arrays;
 
 public class CheckersGame extends Controller {
 
-	public String gameId = "wat";
+    public String gameId = "wat";
 	
     public Result index() {
     	this.gameId = (String) Cache.get("gameId");
@@ -29,10 +29,10 @@ public class CheckersGame extends Controller {
     }
     
     @BodyParser.Of(BodyParser.Json.class)
-    public Result initGame()
-    {
+    public Result initGame() {
     	JsonNode data = request().body().asJson();
-        if(data == null){
+
+        if(data == null) {
             System.out.println("Game id is null!!!");
             return ok();
         }
@@ -40,12 +40,12 @@ public class CheckersGame extends Controller {
     	
         ChekersResponse response = CheckersModel.getInitialResponse(gameId);
         System.out.println("Recived init:"+ gameId + " " + response.toJSONReponse().toString());
+
         return ok(response.toJSONReponse());
     }
     
     @BodyParser.Of(BodyParser.Json.class)
-    public Result getGameState()
-    {
+    public Result getGameState() {
     	 JsonNode data = request().body().asJson();
     	 String gameId = data.get("gameIdInfo").textValue();
     	 
@@ -54,28 +54,30 @@ public class CheckersGame extends Controller {
     }
     
     
-    private String stateTableToString(int [][] state)
-    {
+    private String stateTableToString(int [][] state) {
         String[] toReturn = new String[state.length];
+
         for(int i =0;i<state.length;i++)
         {
             toReturn[i] = Arrays.toString(state[i]);
         }
+
         return Arrays.toString(toReturn);
     }
     
     @BodyParser.Of(BodyParser.Json.class)
     public Result move() {
         JsonNode data = request().body().asJson();
-        if(data == null){
+
+        if(data == null) {
             System.out.println("null");
+
             return ok();
-        } else {
-  
-            ChekersResponse response = CheckersModel.performoveTheMove(data.get("gameIdInfo").toString(), new CheckersMove(data.get("move")));
-            return ok(response.toJSONReponse());
-        }
+        }   
+    	
+	ChekersResponse response = CheckersModel.performoveTheMove(data.get("gameIdInfo").toString(), new CheckersMove(data.get("move")));
         
+	return ok(response.toJSONReponse());
     }
     
     

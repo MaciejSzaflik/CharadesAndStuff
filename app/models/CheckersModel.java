@@ -7,41 +7,34 @@ import java.util.UUID;
 
 public class CheckersModel extends Model {
 	
-	public enum GameState{
-        NewGame,
-        JoinToGame,
-        Spectator
-    }
-	
-	
     public static final int numberOfRows = 8;
     
-    public static String generateNewUUID(){
+    public static String generateNewUUID() {
         return UUID.randomUUID().toString();
     }
     
-    public static ChekersResponse getInitialResponse(String gameId){
-    	
+    public static ChekersResponse getInitialResponse(String gameId) {
     	ChekersResponse response = decideGameState(gameId);
     	response.saveToDatabase();
-		return response;
-    }
-    public static ChekersResponse getGameState(String gameId){
     	
-    	ChekersResponse response = decideGameState(gameId);
 		return response;
     }
     
-    public static ChekersResponse performoveTheMove(String gameId,CheckersMove move)
-    {
+    public static ChekersResponse getGameState(String gameId) {
+    	ChekersResponse response = decideGameState(gameId);
+    	
+		return response;
+    }
+    
+    public static ChekersResponse performoveTheMove(String gameId,CheckersMove move) {
     	ChekersResponse response = ChekersResponse.loadFromdatabase(gameId);
     	response.performeMoveOnMe(move);
     	response.saveToDatabase();
+    	
 		return response;
     }
     
-    private static ChekersResponse decideGameState(String gameId)
-    {
+    private static ChekersResponse decideGameState(String gameId) {
     	if(checkKey(gameId))
     	{
     		ChekersResponse response = ChekersResponse.loadFromdatabase(gameId);
@@ -50,28 +43,28 @@ public class CheckersModel extends Model {
     		else
     			return response;
     	}
+    	
     	return new ChekersResponse(gameId, "a", "b", true, getStartState());
     }
     
-    private static boolean checkKey(String key)
-    {
+    private static boolean checkKey(String key) {
     	//pfffffffffffffffffffff
     	return fileExistanceCheck(key);
     }
-    private static boolean fileExistanceCheck(String key)
-    {
+    
+    private static boolean fileExistanceCheck(String key) {
     	File f = new File(key + ".txt");
     	return f.exists();
     }
     
-    public static ChekersResponse tryingToPlay(String gameId)
-    {
+    public static ChekersResponse tryingToPlay(String gameId) {
 		return null;
     	
     }
     
-    public static int[][] getStartState(){
+    public static int[][] getStartState() {
         int [][] toReturn = new int[numberOfRows][numberOfRows];
+        
         for(int i = 0;i<numberOfRows;i++)
         {
             for(int j = 0;j<numberOfRows;j++)
@@ -85,6 +78,7 @@ public class CheckersModel extends Model {
 
             }
         }
+        
         return toReturn;
     }
 }

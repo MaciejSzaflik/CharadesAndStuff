@@ -1,13 +1,8 @@
 package models;
 import com.fasterxml.jackson.databind.JsonNode;
-
+import enums.MoveType;
 
 public class CheckersMove{
-    
-    public enum  MoveType{
-        m,
-        s
-    }
     
     public MoveType moveType;
     public int x;

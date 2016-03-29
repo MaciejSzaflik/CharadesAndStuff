@@ -21,14 +21,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-/**
- * @author wsargent
- * @since 5/15/12
- */
 @Entity
 public class Token extends Model {
 
-    // Reset tokens will expire after a day.
     private static final int EXPIRATION_DAYS = 1;
 
 
@@ -61,45 +56,23 @@ public class Token extends Model {
     @Formats.NonEmpty
     public String email;
 
-    // -- Queries
     @SuppressWarnings("unchecked")
     public static Model.Finder<String, Token> find = new Finder(String.class, Token.class);
 
-    /**
-     * Retrieve a token by id and type.
-     *
-     * @param token token Id
-     * @param type  type of token
-     * @return a resetToken
-     */
     public static Token findByTokenAndType(String token, TypeToken type) {
         return find.where().eq("token", token).eq("type", type).findUnique();
     }
 
-    /**
-     * @return true if the reset token is too old to use, false otherwise.
-     */
     public boolean isExpired() {
         return dateCreation != null && dateCreation.before(expirationTime());
     }
 
-    /**
-     * @return a date before which the password link has expired.
-     */
     private Date expirationTime() {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DATE, -EXPIRATION_DAYS);
         return cal.getTime();
     }
 
-    /**
-     * Return a new Token.
-     *
-     * @param user  user
-     * @param type  type of token
-     * @param email email for a token change email
-     * @return a reset token
-     */
     private Token getNewToken(User user, TypeToken type, String email) {
         Token token = new Token();
         token.token = UUID.randomUUID().toString();
@@ -110,35 +83,14 @@ public class Token extends Model {
         return token;
     }
 
-    /**
-     * Send the Email to confirm ask new password.
-     *
-     * @param user the current user
-     * @throws java.net.MalformedURLException if token is wrong.
-     */
     public void sendMailResetPassword(User user, MailerClient mc) throws MalformedURLException {
         sendMail(user, TypeToken.password, null, mc);
     }
 
-    /**
-     * Send the Email to confirm ask new password.
-     *
-     * @param user  the current user
-     * @param email email for a change email token
-     * @throws java.net.MalformedURLException if token is wrong.
-     */
     public void sendMailChangeMail(User user, @Nullable String email,MailerClient mc) throws MalformedURLException {
         sendMail(user, TypeToken.email, email,mc );
     }
 
-    /**
-     * Send the Email to confirm ask new password.
-     *
-     * @param user  the current user
-     * @param type  token type
-     * @param email email for a change email token
-     * @throws java.net.MalformedURLException if token is wrong.
-     */
     private void sendMail(User user, TypeToken type, String email, MailerClient mc) throws MalformedURLException {
 
         Token token = getNewToken(user, type, email);
@@ -150,7 +102,7 @@ public class Token extends Model {
 
         // Should use reverse routing here.
         String urlString = urlString = "http://" + externalServer + "/" + type.urlPath + "/" + token.token;
-        URL url = new URL(urlString); // validate the URL
+        URL url = new URL(urlString);
 
         switch (type) {
             case password:
@@ -161,7 +113,7 @@ public class Token extends Model {
             case email:
                 subject = Messages.get("mail.change.ask.subject");
                 message = Messages.get("mail.change.ask.message", url.toString());
-                toMail = token.email; // == email parameter
+                toMail = token.email;
                 break;
         }
 
