@@ -1,22 +1,18 @@
 package models;
 
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import play.libs.Json;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Iterator;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import enums.MoveType;
+import play.libs.Json;
 
 public class ChekersResponse {
 	public String gameId;
@@ -48,12 +44,12 @@ public class ChekersResponse {
 	
 	public void performeMoveOnMe(CheckersMove move)
 	{
-		if(move.moveType == CheckersMove.MoveType.m)
+		if(move.moveType == MoveType.m)
 		{
 			this.gameState[move.fx][move.fy] = 0;
 			this.gameState[move.x][move.y] = move.p;
 		}
-		else if(move.moveType == CheckersMove.MoveType.s)
+		else if(move.moveType == MoveType.s)
 		{
 			this.gameState[move.fx][move.fy] = 0;
 			this.gameState[move.x][move.y] = move.p;
