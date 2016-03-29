@@ -45,3 +45,17 @@ logs
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# trash
+.sbtserver/connections/activator-c84b8b17-a5ac-464a-91ff-426163b8c351.log.01
+build.sbt
+project/.sbtserver
+project/play-fork-run.sbt
+project/sbt-ui.sbt
+.metadata/
+.sbtserver/connections/activator-a2716e96-a653-4f06-9b09-425ebd7d47c7.log
+.sbtserver/connections/master.log
+.sbtserver/master.log
+.sbtserver/previous.log
+.settings/
+project/eclipse.sbt
