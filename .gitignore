@@ -57,3 +57,8 @@ project/sbt-ui.sbt
 .sbtserver/previous.log
 .settings/
 project/eclipse.sbt
+CharadesAndStuff.iml
+.idea/
+.idea_modules/
+.sbtserver/connections/
+project/idea.sbt
