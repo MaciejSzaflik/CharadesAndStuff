@@ -1,5 +1,6 @@
 package controllers;
 
+import models.SimpleChat;
 import models.User;
 import models.utils.AppException;
 import play.Logger;
@@ -9,6 +10,7 @@ import play.data.validation.Constraints;
 import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.WebSocket;
 import views.html.index;
 import static play.data.Form.form;
 
@@ -43,13 +45,24 @@ public class Application extends Controller {
             if (user != null && user.validated) {
                 return GO_DASHBOARD;
             } else {
-                Logger.debug("Clearing invalid session credentials");
+                Logger.debug("Clearing invalid session credentials");	
                 session().clear();
             }
         }
 
-        return ok(index.render(form(Register.class), form(Login.class), form(GameId.class)));
+        return ok(index.render(form(Register.class), form(Login.class), form(GameId.class), form(ChatRedirector.class)));
     }
+    
+    public static WebSocket<String> wsInterface(){
+        return new WebSocket<String>(){
+                
+            // called when websocket handshake is done
+            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out){
+                    SimpleChat.start(in, out);
+            }
+        };   
+    }
+    
 
     /**
      * Login class used by Login Form.
@@ -94,6 +107,15 @@ public class Application extends Controller {
         }
 
     }
+    
+    public static class ChatRedirector {
+
+        public Result validate() {
+            return null;
+        }
+
+    }
+    
 
     public static class Register {
 
@@ -141,11 +163,12 @@ public class Application extends Controller {
         Form<Login> loginForm = form(Login.class).bindFromRequest();
         
         Form<GameId> checkersForm = form(GameId.class).bindFromRequest();
+        Form<ChatRedirector> chatForm = form(ChatRedirector.class).bindFromRequest();
 
         Form<Register> registerForm = form(Register.class);
 
         if (loginForm.hasErrors()) {
-            return badRequest(index.render(registerForm, loginForm,checkersForm));
+            return badRequest(index.render(registerForm, loginForm,checkersForm,chatForm));
         } else {
             session("email", loginForm.get().email);
             return GO_DASHBOARD;

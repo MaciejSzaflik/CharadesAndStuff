@@ -1,0 +1,13 @@
+@(chatForm: Form[Application.ChatRedirector])
+
+@import helper._
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.render) }
+
+<h3>Go to chat</h3>
+
+@form(routes.Application.goToCheckers(), 'class -> "form") {
+	
+    <div class="form-actions">
+        <input type="submit" class="btn btn-primary" value="Go Now">
+    </div>
+}
