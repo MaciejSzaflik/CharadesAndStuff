@@ -12,7 +12,7 @@ POST	/getGameState				controllers.CheckersGame.getGameState()
 
 GET 	/assets.javascript.ws.js    controllers.Application.wsJs()
 GET 	/wsInterface                controllers.Application.wsInterface()
-
+POST    /chat                   	controllers.Application.goToChat()
 
 POST    /login                      controllers.Application.authenticate()
 POST    /checkers                   controllers.Application.goToCheckers()

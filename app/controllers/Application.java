@@ -53,7 +53,7 @@ public class Application extends Controller {
         return ok(index.render(form(Register.class), form(Login.class), form(GameId.class), form(ChatRedirector.class)));
     }
     
-    public static WebSocket<String> wsInterface(){
+    public WebSocket<String> wsInterface(){
         return new WebSocket<String>(){
                 
             // called when websocket handshake is done
@@ -61,6 +61,14 @@ public class Application extends Controller {
                     SimpleChat.start(in, out);
             }
         };   
+    }
+    
+    public Result goToChat() {
+        return ok(views.html.chat.render());
+    }
+    
+    public Result wsJs() {
+        return ok(views.js.ws.render());
     }
     
 
@@ -113,8 +121,8 @@ public class Application extends Controller {
         public Result validate() {
             return null;
         }
-
     }
+    
     
 
     public static class Register {
@@ -157,7 +165,7 @@ public class Application extends Controller {
     /**
      * Handle login form submission.
      *
-     * @return Dashboard if auth OK or login form if auth KO
+     * @return Dashboard if auth OK o	r login form if auth KO
      */
     public Result authenticate() {
         Form<Login> loginForm = form(Login.class).bindFromRequest();
