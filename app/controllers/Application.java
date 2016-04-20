@@ -1,6 +1,7 @@
 package controllers;
 
 import models.SimpleChat;
+import models.SimplePaint;
 import models.User;
 import models.utils.AppException;
 import play.Logger;
@@ -50,12 +51,11 @@ public class Application extends Controller {
             }
         }
 
-        return ok(index.render(form(Register.class), form(Login.class), form(GameId.class), form(ChatRedirector.class)));
+        return ok(index.render(form(Register.class), form(Login.class), form(GameId.class), form(ChatRedirector.class), form(PaintRedirector.class)));
     }
     
     public WebSocket<String> wsInterface(){
-        return new WebSocket<String>(){
-                
+        return new WebSocket<String>(){ 
             // called when websocket handshake is done
             public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out){
                     SimpleChat.start(in, out);
@@ -63,12 +63,30 @@ public class Application extends Controller {
         };   
     }
     
+    public WebSocket<String> wsPaintInterface(){
+        return new WebSocket<String>(){ 
+            // called when websocket handshake is done
+            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out){
+                    SimplePaint.start(in, out);
+            }
+        };   
+    }
+    
+    
     public Result goToChat() {
         return ok(views.html.chat.render());
     }
     
     public Result wsJs() {
         return ok(views.js.ws.render());
+    }
+    
+    public Result goToPaint() {
+        return ok(views.html.paintScreen.render());
+    }
+    
+    public Result wsPaintJs() {
+        return ok(views.js.wsPaint.render());
     }
     
 
@@ -117,6 +135,13 @@ public class Application extends Controller {
     }
     
     public static class ChatRedirector {
+
+        public Result validate() {
+            return null;
+        }
+    }
+    
+    public static class PaintRedirector {
 
         public Result validate() {
             return null;
@@ -172,11 +197,11 @@ public class Application extends Controller {
         
         Form<GameId> checkersForm = form(GameId.class).bindFromRequest();
         Form<ChatRedirector> chatForm = form(ChatRedirector.class).bindFromRequest();
-
+        Form<PaintRedirector> paintForm = form(PaintRedirector.class).bindFromRequest();
         Form<Register> registerForm = form(Register.class);
 
         if (loginForm.hasErrors()) {
-            return badRequest(index.render(registerForm, loginForm,checkersForm,chatForm));
+            return badRequest(index.render(registerForm, loginForm,checkersForm,chatForm,paintForm));
         } else {
             session("email", loginForm.get().email);
             return GO_DASHBOARD;
