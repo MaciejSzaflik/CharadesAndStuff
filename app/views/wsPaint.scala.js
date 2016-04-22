@@ -17,19 +17,38 @@ $(function(){
 
 	var drawALine = function()
 	{
-		ctx.beginPath();
-		var startValues =  eventCatcher[0].split(";");
-		ctx.moveTo(startValues[0], startValues[1]);
-		ctx.strokeStyle = startValues[2];
-		for(var i = 1;i<eventCatcher.length;i++)
+
+		var values = [];
+		for(var i = 0;i<eventCatcher.length;i++)
+			values.push(eventCatcher[i].split(";"));
+
+		var pathHaveBegun = false;
+		for(var i = 0;i<values.length;i++)
 		{
-			var values = eventCatcher[i].split(";");
-			ctx.lineTo(values[0], values[1]);
-			ctx.stroke();
+			if(values[i][2] == "'x")
+			{
+				pathHaveBegun = false;
+				continue;
+			}
+			
+			if(!pathHaveBegun)
+			{
+				pathHaveBegun = true;
+				ctx.beginPath();
+				ctx.moveTo(values[i][0], values[i][1]);
+				ctx.strokeStyle = values[i][2];
+				continue;
+			}
+			else
+			{
+				ctx.strokeStyle = values[i][2];
+				ctx.lineTo(values[i][0], values[i][1]);
+				ctx.stroke();
+			}
 		}
 		eventCatcher = [];
 	}
-	 socket.onmessage = function (event) {
+	socket.onmessage = function (event) {
 			
 			eventCatcher.push(event.data);
 			if(eventCatcher.length>20)
@@ -38,6 +57,13 @@ $(function(){
 				eventCatcher = [];
 			}
 	}
+	
+	
+	window.onbeforeunload = function() {
+		socket.onclose = function () {}; // disable onclose handler first
+		socket.close()
+	};
+	
 	var mouse = {x: 0, y: 0};
 	 
 	canvas.addEventListener('mousemove', function(e) {
@@ -52,6 +78,8 @@ $(function(){
 	ctx.strokeStyle = myColor;
 	 
 	canvas.addEventListener('mousedown', function(e) {
+		
+		socket.send(mouse.x+";"+mouse.y+";" + myColor);
 		ctx.strokeStyle = myColor;
 		ctx.beginPath();
 		ctx.moveTo(mouse.x, mouse.y);
@@ -59,6 +87,7 @@ $(function(){
 	}, false);
 	 
 	canvas.addEventListener('mouseup', function() {
+		socket.send(mouse.x+";"+mouse.y+";x");
 		canvas.removeEventListener('mousemove', onPaint, false);
 	}, false);
 	 
@@ -69,3 +98,4 @@ $(function(){
 	};
 
 });
+
