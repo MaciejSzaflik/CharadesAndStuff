@@ -1,0 +1,13 @@
+@(paintForm: Form[Application.PaintRedirector])
+
+@import helper._
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.render) }
+
+<h3>Go to paint</h3>
+
+@form(routes.Application.goToPaint(), 'class -> "form") {
+	
+    <div class="form-actions">
+        <input type="submit" class="btn btn-primary" value="Go Now">
+    </div>
+}
