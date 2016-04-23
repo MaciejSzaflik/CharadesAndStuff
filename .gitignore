@@ -28,6 +28,7 @@ project/target
 project/plugins/target
 target
 .target
+public/dist
 
 logs
 
@@ -57,3 +58,4 @@ project/sbt-ui.sbt
 .sbtserver/previous.log
 .settings/
 project/eclipse.sbt
+public/node_modules
