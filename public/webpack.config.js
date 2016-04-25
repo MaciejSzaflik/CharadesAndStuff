@@ -22,6 +22,10 @@ module.exports = {
         test: /\.css$/,
         loader: "style!css?modules&localIdentName=[name]---[local]---[hash:base64:5]",
         exclude: /node_modules/
+      }, {
+        test: /\.css$/,
+        loader: "style!css?modules",
+        include: /flexboxgrid/
       }
     ]
   },

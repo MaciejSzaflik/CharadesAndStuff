@@ -1,5 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
+import {AppBar, Tabs, Tab} from 'material-ui';
+import {Grid, Col, Row} from 'react-flexbox-grid';
 
 import {Navbar} from './Navbar';
 import styles from '../styles/main.css';
@@ -14,17 +16,12 @@ export class Main extends React.Component {
       name: 'Home'
     }];
     return (
-      <div className="mdl-layout mdl-js-layout">
-        <Navbar links={links}/>
-        <main className="mdl-layout__content">
-          <div className={styles.contentMaxWidth}>
-            <div className="mdl-grid content-max-width">
-              <div className="mdl-cell">
-                {this.props.children}
-              </div>
-            </div>
-          </div>
-        </main>
+      <div>
+        <AppBar title="Charades and Stuff"></AppBar>
+        <Grid>
+          <Row>
+          </Row>
+        </Grid>
       </div>
     )
   }
