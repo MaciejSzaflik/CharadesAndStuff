@@ -18,6 +18,10 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: "babel-loader"
+      }, {
+        test: /\.css$/,
+        loader: "style!css?modules&localIdentName=[name]---[local]---[hash:base64:5]",
+        exclude: /node_modules/
       }
     ]
   },
