@@ -293,11 +293,6 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
     {
       this.state[this.selectPiece.logicX][this.selectPiece.logicY] = 0;
       this.state[move["x"]][move["y"]] = this.selectPiece.type;
-	  this.setState(this.state);
-	  this.clearHighlights();
-	  this.whosTurnIsIt = this.whosTurnIsIt == "black"? "white" : "black";
-	  return true;
-      
     }
     else if(move["t"] == "s")
     {
@@ -306,15 +301,28 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
       this.state[move["xs"]][move["ys"]] = 0;
     }
 	
-	this.lastCheckerMoved =  {"x":move["x"], "y":move["y"], "p":this.whosTurnIsIt};
+	if(this.selectPiece.type == 1 && move["x"] == this.numberOfColumns-1)
+	{
+		this.state[move["x"]][move["y"]]  = 3;
+		console.log("crowning");
+	}
+	
+	if(this.selectPiece.type == 2 && move["x"] == 0)
+	{
+		this.state[move["x"]][move["y"]]  = 4;
+		console.log("crowning");
+	}
+	
+	this.lastCheckerMoved = move["t"] == "m'"? null :{"x":move["x"], "y":move["y"], "p":this.whosTurnIsIt};
 	this.setState(this.state);
     this.clearHighlights();
 	
-	
-	if(!checkersLogic.canThisCheckerStrike(move["x"],move["y"],this.state) || move["t"] == "m'")
+	if(!checkersLogic.canThisCheckerStrike(move["x"],move["y"],this.state) || move["t"] == "m")
 	{
+		
 		this.lastCheckerMoved = null;
 		this.whosTurnIsIt = this.whosTurnIsIt == "black"? "white" : "black";
+		console.log("now turn : "+ this.whosTurnIsIt);
 	}
 	
 	
@@ -441,6 +449,7 @@ function CheckersPiece(type, id, logicX, logicY, sizeOfBlock, size, fill, stroke
   this.type = type;
 
   this.redraw = function (x, y) {
+	this.type = checkers.state[this.logicX][this.logicY];
     this.x = x || this.x
     this.y = y || this.y;
     this.draw(this.stroke);
@@ -473,9 +482,15 @@ function CheckersPiece(type, id, logicX, logicY, sizeOfBlock, size, fill, stroke
     ctx.lineWidth = this.strokewidth;
     ctx.arc( this.calculateX(), this.calculateY() , this.size, 0, Math.PI*2, true);
     ctx.closePath();
-
     ctx.stroke();
     ctx.fill();
+	if(this.type == 3 || this.type == 4)
+	{
+		ctx.arc( this.calculateX(), this.calculateY(), this.size*0.5, 0, Math.PI*2, true);
+		ctx.closePath();
+		ctx.stroke();
+	}
+	
     ctx.restore();
   }
 
