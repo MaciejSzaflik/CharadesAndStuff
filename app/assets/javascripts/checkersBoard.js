@@ -125,7 +125,7 @@ function handleMouseDown(e) {
   }
   if (clicked != null) {
     var result = checkersLogic.generateMoveListForChecker(clicked.logicX,clicked.logicY,checkers.state);
-	var fullmoveList = checkersLogic.generateMoveListFull(true,checkers.state);
+	var fullmoveList = checkersLogic.generateMoveListFull(checkers.whosTurnIsIt,checkers.state);
 
 	result = filterNotContainingItems(result,fullmoveList);
 
@@ -222,6 +222,8 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
   this.highlights = null;
   this.selectPiece = null;
   this.onMovePerfomed = null;
+  
+  this.whosTurnIsIt = "white";
 
   this.getInfo = function() {
 
@@ -253,14 +255,29 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
     }
     else
     {
-      if(this.performMove(move) && this.onMovePerfomed!=null);
-      this.onMovePerfomed(move);
+      if(this.performMove(move) && this.onMovePerfomed!=null)
+		this.onMovePerfomed(move);
     }
+  }
+  
+  this.checkTurn = function(move)
+  {
+		var white = this.isThisWhitePiece(move["fx"],move["fy"]) && this.whosTurnIsIt == "white";
+		var black = this.isThisBlackPiece(move["fx"],move["fy"]) && this.whosTurnIsIt == "black";
+		return white || black;
   }
 
   this.performMove = function(move)
   {
-
+	if(!this.checkTurn(move))
+	{
+		alert("bad turn!!!");
+		this.setState(this.state);
+		this.clearHighlights();
+		return false;
+	}
+	
+	this.whosTurnIsIt  = this.whosTurnIsIt == "black"? "white" : "black";
     if(move["t"] == "m")
     {
       this.state[this.selectPiece.logicX][this.selectPiece.logicY] = 0;
@@ -279,6 +296,16 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
       return true;
     }
   }
+  
+  this.isThisWhitePiece = function(x,y)
+  {
+	  return this.state[x][y] == 1 || this.state[x][y] == 3;
+  }
+   this.isThisBlackPiece = function(x,y)
+  {
+	  return this.state[x][y] == 2 || this.state[x][y] == 4;
+  }
+
 
   this.clearHighlights = function()
   {
@@ -455,8 +482,8 @@ function CheckerLogicKeeper()
   this.generateMoveListFull = function(player,currentState)
   {
 	  var moveList = [];
-	  var normalChecker = player?1:2;
-	  var specialChecker = player?3:4;
+	  var normalChecker = player == "white"?1:2;
+	  var specialChecker = player == "black"?3:4;
 	  
 	  var wasStrike = false;
 	  for(var i = 0;i<currentState.length;i++)
