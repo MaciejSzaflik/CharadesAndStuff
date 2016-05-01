@@ -124,14 +124,17 @@ function handleMouseDown(e) {
     }
   }
   if (clicked != null) {
-    var result = checkersLogic.generateMoveListForChecker(clicked.logicX,clicked.logicY,checkers.state);
-	var fullmoveList = checkersLogic.generateMoveListFull(checkers.whosTurnIsIt,checkers.state);
-
-	result = filterNotContainingItems(result,fullmoveList);
-
-    checkers.highlights = result;
-    checkers.selectPiece = clicked;
-    redraw(mouseX,mouseY);
+	
+	if(checkers.canIMoveThis(clicked))
+	{
+		result = checkersLogic.generateMoveListForChecker(clicked.logicX,clicked.logicY,checkers.state);
+		var fullmoveList = checkersLogic.generateMoveListFull(checkers.whosTurnIsIt,checkers.state);
+		result = filterNotContainingItems(result,fullmoveList);
+		checkers.highlights = result;
+		checkers.selectPiece = clicked;
+		redraw(mouseX,mouseY);
+	}
+    
   }
   else
   {
@@ -224,10 +227,18 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
   this.onMovePerfomed = null;
   
   this.whosTurnIsIt = "white";
+  this.lastCheckerMoved = null;
 
   this.getInfo = function() {
 
   };
+  
+  this.canIMoveThis = function(clicked)
+  {
+	  if(this.lastCheckerMoved == null)
+		  return true;
+	  return (clicked.logicX == this.lastCheckerMoved["x"] && clicked.logicY == this.lastCheckerMoved["y"]);  
+  }
 
   this.clicked = function(piece,moves)
   {
@@ -277,24 +288,37 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
 		return false;
 	}
 	
-	this.whosTurnIsIt  = this.whosTurnIsIt == "black"? "white" : "black";
+	this.lastCheckerMoved = null;
     if(move["t"] == "m")
     {
       this.state[this.selectPiece.logicX][this.selectPiece.logicY] = 0;
       this.state[move["x"]][move["y"]] = this.selectPiece.type;
-      this.setState(this.state);
-      this.clearHighlights();
-      return true;
+	  this.setState(this.state);
+	  this.clearHighlights();
+	  this.whosTurnIsIt = this.whosTurnIsIt == "black"? "white" : "black";
+	  return true;
+      
     }
     else if(move["t"] == "s")
     {
       this.state[this.selectPiece.logicX][this.selectPiece.logicY] = 0;
       this.state[move["x"]][move["y"]] = this.selectPiece.type
       this.state[move["xs"]][move["ys"]] = 0;
-      this.setState(this.state);
-      this.clearHighlights();
-      return true;
     }
+	
+	this.lastCheckerMoved =  {"x":move["x"], "y":move["y"], "p":this.whosTurnIsIt};
+	this.setState(this.state);
+    this.clearHighlights();
+	
+	
+	if(!checkersLogic.canThisCheckerStrike(move["x"],move["y"],this.state) || move["t"] == "m'")
+	{
+		this.lastCheckerMoved = null;
+		this.whosTurnIsIt = this.whosTurnIsIt == "black"? "white" : "black";
+	}
+	
+	
+    return true;
   }
   
   this.isThisWhitePiece = function(x,y)
@@ -479,6 +503,20 @@ function CheckerLogicKeeper()
     }
   }
   
+  this.canThisCheckerStrike = function(x,y,currentState)
+  {
+	var list = this.generateMoveListForChecker(x,y,currentState);
+	if(list == null)
+		return false;
+	
+	for(var i = 0;i<list.length;i++)
+	{
+		if(list[i]["t"] == "s")
+			return true;
+	}
+	return false;
+  }
+  
   this.generateMoveListFull = function(player,currentState)
   {
 	  var moveList = [];
@@ -507,6 +545,7 @@ function CheckerLogicKeeper()
 	  
 	  return moveList;
   }
+  
 
   this.generateBlackSimpleMove = function(x,y,currentState) {
     var list = [];
