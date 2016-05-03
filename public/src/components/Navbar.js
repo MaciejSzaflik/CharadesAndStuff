@@ -11,8 +11,8 @@ export class Navbar extends React.Component {
           <div className="mdl-layout-spacer"></div>
           <nav className="mdl-navigation mdl-layout--large-screen-only">
             {this.props.links.map((link) => (
-              <Link to={link.path}>
-                <span className="mdl-navigation__link">{link.name}</span>
+              <Link to={link.path} className="mdl-navigation__link">
+                {link.name}
               </Link>
             ))}
           </nav>
