@@ -267,6 +267,7 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
     else
     {
       if(this.performMove(move) && this.onMovePerfomed!=null)
+		console.log(move["p"]);
 		this.onMovePerfomed(move);
     }
   }
@@ -303,13 +304,13 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
 	
 	if(this.selectPiece.type == 1 && move["x"] == this.numberOfColumns-1)
 	{
-		this.state[move["x"]][move["y"]]  = 3;
+		this.state[move["x"]][move["y"]]  =  move["p"]  = 3;
 		console.log("crowning");
 	}
 	
 	if(this.selectPiece.type == 2 && move["x"] == 0)
 	{
-		this.state[move["x"]][move["y"]]  = 4;
+		this.state[move["x"]][move["y"]]  = move["p"]  = 4;
 		console.log("crowning");
 	}
 	
@@ -361,7 +362,7 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
             j,
             this.size,
             this.size*0.30,
-            this.state[i][j] == 1?this.colorLightPiece:this.colorDarkPiece, this.state[i][j] == 1?this.colorDarkPiece:this.colorLightPiece, 5));
+            (this.state[i][j] == 1 || this.state[i][j] == 3)?this.colorLightPiece:this.colorDarkPiece, (this.state[i][j] == 1 || this.state[i][j] == 3)?this.colorDarkPiece:this.colorLightPiece, 5));
       }
     }
   }
@@ -449,7 +450,7 @@ function CheckersPiece(type, id, logicX, logicY, sizeOfBlock, size, fill, stroke
   this.type = type;
 
   this.redraw = function (x, y) {
-	this.type = checkers.state[this.logicX][this.logicY];
+	this.type = checkers.state[this.logicX][this.logicY];	
     this.x = x || this.x
     this.y = y || this.y;
     this.draw(this.stroke);
@@ -546,6 +547,9 @@ function CheckerLogicKeeper()
 			  if(currentState[i][j] == normalChecker || currentState[i][j] == specialChecker)
 			  {
 				  var list = this.generateMoveListForChecker(i,j,currentState);
+				  if(list == null)
+					  continue;
+				  
 				  for(var k = 0;k<list.length;k++)
 				  {
 					  if(list[k]["t"] == "s")

@@ -58,9 +58,6 @@ public class ChekersResponse {
 	}
 	
 	
-	
-	
-	
 	public void saveToDatabase()
 	{
 		//pfffffffffffffffffffffff
