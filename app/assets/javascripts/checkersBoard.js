@@ -7,7 +7,6 @@ function initializeBoard(initGameID){
 
   gameIdVal = initGameID;
   var val = JSON.stringify({"gameIdInfo" : gameIdVal});
-  console.log(val);
   sendSomething(
     "POST",
     "/initCheckersGame",
@@ -267,7 +266,6 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
     else
     {
       if(this.performMove(move) && this.onMovePerfomed!=null)
-		console.log(move["p"]);
 		this.onMovePerfomed(move);
     }
   }
@@ -512,9 +510,9 @@ function CheckerLogicKeeper()
       case 2:
         return this.generateBlackSimpleMove(x,y,currentState);
       case 3:
-        return null;
+        return this.generateKingMove(x,y,currentState);
       case 4:
-        return null;
+        return this.generateKingMove(x,y,currentState);
 
     }
   }
@@ -537,7 +535,7 @@ function CheckerLogicKeeper()
   {
 	  var moveList = [];
 	  var normalChecker = player == "white"?1:2;
-	  var specialChecker = player == "black"?3:4;
+	  var specialChecker = player == "white"?3:4;
 	  
 	  var wasStrike = false;
 	  for(var i = 0;i<currentState.length;i++)
@@ -561,7 +559,6 @@ function CheckerLogicKeeper()
 	  }
 	  if(wasStrike)
 		  return moveList.filter(function (move) {return move["t"] == "s"});
-	  
 	  return moveList;
   }
   
@@ -577,6 +574,36 @@ function CheckerLogicKeeper()
     
     return  strikes.length == 0? list : strikes;
   }
+  
+  
+  this.generateKingMove = function(x,y,currentState) {
+    var list = [];
+	var strikes = []
+	list = this.generateKingsMove(x,y,currentState)
+	strikes = this.generateKingsStrikes(x,y,currentState);
+    return  strikes.length == 0? list : strikes;
+  }
+  
+  this.generateKingsMove = function(x,y,currentState)
+  {
+	  var list = [];
+	  if(this.getFromArray(x-1,y+1,currentState) == 0)
+		list.push(this.moveDefinition(x-1,y+1,"m",0,0,x,y,this.getFromArray(x,y,currentState)));
+	  if(this.getFromArray(x-1,y-1,currentState) == 0)
+		list.push(this.moveDefinition(x-1,y-1,"m",0,0,x,y,this.getFromArray(x,y,currentState)));
+	  if(this.getFromArray(x+1,y+1,currentState) == 0)
+		list.push(this.moveDefinition(x+1,y+1,"m",0,0,x,y,this.getFromArray(x,y,currentState)));
+	  if(this.getFromArray(x+1,y-1,currentState) == 0)
+		list.push(this.moveDefinition(x+1,y-1,"m",0,0,x,y,this.getFromArray(x,y,currentState)));
+	  return list;
+  }
+  this.generateKingsStrikes = function(x,y,currentState)
+  {
+	  var list = [];
+	  return list;
+  }
+  
+  
 
   this.generateWhiteSimpleMove = function(x,y,currentState) {
     var list = [];
@@ -590,18 +617,26 @@ function CheckerLogicKeeper()
     return  strikes.length == 0? list : strikes;
   }
 
-  this.checkStrike = function(x,y,currentState,enemyVal)
+  this.checkStrike = function(x,y,currentState)
   {
     var list = [];
-    if(this.getFromArray(x+1,y+1,currentState) == enemyVal && this.getFromArray(x+2,y+2,currentState) == 0)
+	var me = this.getFromArray(x,y,currentState);
+	var eValNr = this.checkOR(me,1,3)  ? 2 : 1;
+	var eValSp = this.checkOR(me,1,3)  ? 4 : 3;
+	
+    if(this.checkOR(this.getFromArray(x+1,y+1,currentState),eValNr,eValSp) && this.getFromArray(x+2,y+2,currentState) == 0)
       list.push(this.moveDefinition(x+2,y+2,"s",x+1,y+1,x,y,this.getFromArray(x,y,currentState)));
-    if(this.getFromArray(x+1,y-1,currentState) == enemyVal && this.getFromArray(x+2,y-2,currentState) == 0)
+    if(this.checkOR(this.getFromArray(x+1,y-1,currentState),eValNr,eValSp) && this.getFromArray(x+2,y-2,currentState) == 0)
       list.push(this.moveDefinition(x+2,y-2,"s",x+1,y-1,x,y,this.getFromArray(x,y,currentState)));
-    if(this.getFromArray(x-1,y-1,currentState) == enemyVal && this.getFromArray(x-2,y-2,currentState) == 0)
+    if(this.checkOR(this.getFromArray(x-1,y-1,currentState),eValNr,eValSp) && this.getFromArray(x-2,y-2,currentState) == 0)
       list.push(this.moveDefinition(x-2,y-2,"s",x-1,y-1,x,y,this.getFromArray(x,y,currentState)));
-    if(this.getFromArray(x-1,y+1,currentState) == enemyVal && this.getFromArray(x-2,y+2,currentState) == 0)
+    if(this.checkOR(this.getFromArray(x-1,y+1,currentState),eValNr,eValSp) && this.getFromArray(x-2,y+2,currentState) == 0)
       list.push(this.moveDefinition(x-2,y+2,"s",x-1,y+1,x,y,this.getFromArray(x,y,currentState)));
     return list;
+  }
+  this.checkOR = function(value,one,two)
+  {
+	  return value == one || value == two;
   }
 
   this.getFromArray = function(x,y,currentState)
