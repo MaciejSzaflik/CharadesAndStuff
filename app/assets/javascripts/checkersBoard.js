@@ -600,10 +600,53 @@ function CheckerLogicKeeper()
   this.generateKingsStrikes = function(x,y,currentState)
   {
 	  var list = [];
+	  var move = this.checkDirectionForKingStrike(x,y,currentState,1,1);
+	  if(move!=null)
+		  list.push(move);
+	  move = this.checkDirectionForKingStrike(x,y,currentState,-1,1);
+	  if(move!=null)
+		  list.push(move);
+	   move = this.checkDirectionForKingStrike(x,y,currentState,-1,-1);
+	  if(move!=null)
+		  list.push(move);
+	   move = this.checkDirectionForKingStrike(x,y,currentState,1,-1);
+	  if(move!=null)
+		  list.push(move);
+	  
 	  return list;
   }
   
-  
+  this.checkDirectionForKingStrike = function(kingX,kingY,currentState,dirXDiff,dirYDiff)
+  {
+		var me = this.getFromArray(kingX,kingY,currentState);
+		var eValNr = this.checkOR(me,1,3)  ? 2 : 1;
+		var eValSp = this.checkOR(me,1,3)  ? 4 : 3;
+		
+		var checking = -1;
+		var counter = 1;
+		do{
+			checking = this.getFromArray(kingX + dirXDiff*counter, kingY + dirYDiff*counter,currentState);
+			if(checking > 0)
+			{
+				counter++;
+				if(this.checkOR(checking,eValNr,eValSp) && this.getFromArray(kingX + dirXDiff*counter, kingY + dirYDiff*counter,currentState) == 0)
+				{
+					return this.moveDefinition(
+						kingX + dirXDiff*counter,
+						kingY + dirYDiff*counter,
+						"s",
+						kingX + dirXDiff*(counter-1),
+						kingY + dirYDiff*(counter-1),
+						kingX,kingY,this.getFromArray(kingX,kingY,currentState));
+				}
+				else
+					return null;
+			}
+			else
+				counter++;
+		}while (checking>=0)
+		return null;
+  }
 
   this.generateWhiteSimpleMove = function(x,y,currentState) {
     var list = [];
