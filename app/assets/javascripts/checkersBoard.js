@@ -51,6 +51,9 @@ function createCheckers(data)
 
   var val = JSON.stringify({"gameIdInfo" : gameIdVal});
   window.setInterval(function(){
+	  if(checkers.won!= 0)
+		  return;
+	  
     sendSomething(
       "POST",
       "/getGameState",
@@ -59,6 +62,7 @@ function createCheckers(data)
         data = JSON.parse(data);
         boardState = parseBoardState(data["gameState"]);
         checkers.setState(boardState);
+		checkers.won = checkersLogic.checkAWin(boardState);
       },
       function(request,error) {console.log(error);});
   }, 200);
@@ -227,6 +231,7 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
   
   this.whosTurnIsIt = "white";
   this.lastCheckerMoved = null;
+  this.won = 0;
 
   this.getInfo = function() {
 
@@ -266,6 +271,7 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
     else
     {
       if(this.performMove(move) && this.onMovePerfomed!=null)
+		won = checkersLogic.checkAWin(this.state);
 		this.onMovePerfomed(move);
     }
   }
@@ -500,6 +506,38 @@ function CheckersPiece(type, id, logicX, logicY, sizeOfBlock, size, fill, stroke
 
 function CheckerLogicKeeper()
 {
+	
+  this.checkAWin = function(currentState) {
+	  var dict = {};
+	  for(var i = 0;i<currentState.length;i++)
+	  {
+			 for(var j = 0;j<currentState[i].length;j++)
+			  {
+				  if(dict[currentState[i][j]] === undefined )
+					  dict[currentState[i][j]] = 1;
+				  else
+					  dict[currentState[i][j]]++;
+			  }
+	  }
+	  
+	  var sumBlack = dict[2] === undefined ? 0 : dict[2];
+	  sumBlack += dict[4] === undefined ? 0 : dict[4];
+	  
+	  var sumWhite = dict[1] === undefined ? 0 : dict[1];
+	  sumWhite += dict[3] === undefined ? 0 : dict[3];
+	  
+	  if(sumWhite == 0)
+	  {
+		  alert("Black wins");
+		  return 2;
+	  }
+	  if(sumBlack == 0)
+	  {
+		  alert("White wins");
+		  return 1;
+	  }
+  }
+	
   this.generateMoveListForChecker = function(x,y,currentState) {
     switch(currentState[x][y])
     {
