@@ -12,6 +12,7 @@ public class CheckersMove{
     public int fx;
     public int fy;
     public int p;
+    public String whosTurn;
         
     public CheckersMove(JsonNode node)
     {
@@ -23,6 +24,7 @@ public class CheckersMove{
         this.fx = node.get("fx").intValue();
         this.fy = node.get("fy").intValue();
         this.p = node.get("p").intValue();
+        this.whosTurn = node.get("whosTurn").asText();
     }
     
     public String toString(){

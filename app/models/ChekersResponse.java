@@ -18,15 +18,15 @@ public class ChekersResponse {
 	public String gameId;
 	public String black;
 	public String white;
-	public boolean isWhiteTurn;
+	public String whosTurnIsIt;
 	public int[][] gameState;
 	
-	public ChekersResponse(String gameId,String white,String black,boolean isWhiteTurn,int[][] state)
+	public ChekersResponse(String gameId,String white,String black,String whosTurnIsIt,int[][] state)
 	{
 		this.gameId = gameId;
 		this.black = black.replace("\"", "").replace("\\", "");
 		this.white = white.replace("\"", "").replace("\\", "");
-		this.isWhiteTurn = isWhiteTurn;
+		this.whosTurnIsIt = whosTurnIsIt;
 		this.gameState = state;
 	}
 	
@@ -36,7 +36,7 @@ public class ChekersResponse {
 		result.put("gameId", this.gameId);
         result.put("black", this.black);
         result.put("white",this.white);
-        result.put("isWhiteTurn",this.isWhiteTurn);
+        result.put("whosTurnIsIt",this.whosTurnIsIt);
         result.put("gameState",stateTableToString(this.gameState));
         
 		return result;
@@ -55,6 +55,16 @@ public class ChekersResponse {
 			this.gameState[move.x][move.y] = move.p;
 			this.gameState[move.xs][move.ys] = 0;
 		}
+		this.whosTurnIsIt = move.whosTurn;
+	}
+	
+	private String whosMoveWillBeNext(int checkerMoved)
+	{
+		return checkOr(1,3,checkerMoved)? "black" : "white";
+	}
+	private boolean checkOr(int a,int b,int val)
+	{
+		return (a == val) || (b == val);
 	}
 	
 	
@@ -101,7 +111,7 @@ public class ChekersResponse {
 					alfa.get("gameId").toString(),
 					alfa.get("black").toString(),
 					alfa.get("white").toString(),
-					alfa.get("isWhiteTurn").asBoolean(),
+					alfa.get("whosTurnIsIt").toString(),
 					convertThisUglySomething( alfa.get("gameState").toString())
 					);
 			

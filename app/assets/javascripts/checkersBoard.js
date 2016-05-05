@@ -62,6 +62,10 @@ function createCheckers(data)
         data = JSON.parse(data);
         boardState = parseBoardState(data["gameState"]);
         checkers.setState(boardState);
+		var whosTurn = data["whosTurnIsIt"].replace(/\\/g,"");
+	    whosTurn = whosTurn.replace(/"/g,"");
+		console.log(whosTurn);
+		checkers.whosTurnIsIt = whosTurn;
 		checkers.won = checkersLogic.checkAWin(boardState);
       },
       function(request,error) {console.log(error);});
@@ -272,6 +276,7 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
     {
       if(this.performMove(move) && this.onMovePerfomed!=null)
 		won = checkersLogic.checkAWin(this.state);
+		move["whosTurn"] = this.whosTurnIsIt;
 		this.onMovePerfomed(move);
     }
   }
@@ -536,6 +541,7 @@ function CheckerLogicKeeper()
 		  alert("White wins");
 		  return 1;
 	  }
+	  return 0;
   }
 	
   this.generateMoveListForChecker = function(x,y,currentState) {
@@ -571,6 +577,7 @@ function CheckerLogicKeeper()
   
   this.generateMoveListFull = function(player,currentState)
   {
+	  console.log("player:"+ player);
 	  var moveList = [];
 	  var normalChecker = player == "white"?1:2;
 	  var specialChecker = player == "white"?3:4;

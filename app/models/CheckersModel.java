@@ -44,7 +44,7 @@ public class CheckersModel extends Model {
     			return response;
     	}
     	
-    	return new ChekersResponse(gameId, "a", "b", true, getStartState());
+    	return new ChekersResponse(gameId, "a", "b", "white", getStartState());
     }
     
     private static boolean checkKey(String key) {
