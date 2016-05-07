@@ -1,13 +1,15 @@
 import React from 'react';
 import {Router, Route, IndexRoute} from 'react-router';
-import {Main} from '../components/Main';
+import {Main} from '../main';
+import {Puns} from '../puns';
+import {Checkers} from '../checkers';
 import {Home} from '../components/Home';
 
 export let routes = (
   <Router>
     <Route path="/" component={Main}>
-      <Route path="/home" component={Home}>
-      </Route>
+      <Route path="/puns" component={Puns} />
+      <Route path="/checkers" component={Checkers} />
     </Route>
   </Router>
 )
