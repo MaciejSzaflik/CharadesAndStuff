@@ -3,9 +3,11 @@ var checkers = null;
 var checkersLogic = null;
 var gameHistory = [];
 var gameIdVal = "";
-function initializeBoard(initGameID){
+var playerValue = "";
+function initializeBoard(initGameID,player){
 
   gameIdVal = initGameID;
+  playerValue = player;
   var val = JSON.stringify({"gameIdInfo" : gameIdVal});
   sendSomething(
     "POST",
@@ -16,10 +18,7 @@ function initializeBoard(initGameID){
 
   canvas = document.getElementById('checkers');
   ctx = canvas.getContext('2d');
-
-
 }
-
 
 function parseBoardState(data)
 {
@@ -64,7 +63,6 @@ function createCheckers(data)
         checkers.setState(boardState);
 		var whosTurn = data["whosTurnIsIt"].replace(/\\/g,"");
 	    whosTurn = whosTurn.replace(/"/g,"");
-		console.log(whosTurn);
 		checkers.whosTurnIsIt = whosTurn;
 		checkers.won = checkersLogic.checkAWin(boardState);
       },
@@ -243,6 +241,13 @@ function CheckerBoard (type,sizeOfBlock,ctxVal) {
   
   this.canIMoveThis = function(clicked)
   {
+	  if(this.whosTurnIsIt != playerValue)
+	  {
+		  console.log(playerValue + " " + this.whosTurnIsIt);
+		  alert("it's not your turn!");
+		  return false;
+	  }
+	  
 	  if(this.lastCheckerMoved == null)
 		  return true;
 	  return (clicked.logicX == this.lastCheckerMoved["x"] && clicked.logicY == this.lastCheckerMoved["y"]);  

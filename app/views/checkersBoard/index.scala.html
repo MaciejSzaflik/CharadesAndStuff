@@ -1,4 +1,4 @@
-@(gameId: String)
+@(gameId: String, player: String)
 <head>
         <meta charset="utf-8" />
         <title>Checkers board</title>
@@ -7,7 +7,7 @@
         
 </head>
 	<h5>Game Id: @gameId</h5>
-    <body onload='initializeBoard("@gameId");'>
+    <body onload='initializeBoard("@gameId","@player");'>
         <div class="container">
            
             <div id="canvasParent">

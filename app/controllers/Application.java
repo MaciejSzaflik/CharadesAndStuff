@@ -210,8 +210,19 @@ public class Application extends Controller {
     
     public Result goToCheckers(){
         Form<GameId> checkersForm = form(GameId.class).bindFromRequest();
-        Cache.set("gameId",checkersForm.get().gameId);
-        return redirect(routes.CheckersGame.index());
+        
+        String[] dataToProcess = checkersForm.get().gameId.split(";");
+        if(dataToProcess.length == 2 && (dataToProcess[1].equals("black") || dataToProcess[1].equals("white")))
+        {
+	        Cache.set("gameId",dataToProcess[0]);
+	        Cache.set("player",dataToProcess[1]);
+	        return redirect(routes.CheckersGame.index());
+        }
+        else
+        {
+        	System.out.println("error bad params");
+        	return GO_HOME;
+        }
 
     }
 

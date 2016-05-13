@@ -22,10 +22,12 @@ import java.util.Arrays;
 public class CheckersGame extends Controller {
 
     public String gameId = "wat";
+    public String player = "white";
 	
     public Result index() {
     	this.gameId = (String) Cache.get("gameId");
-        return ok(index.render(this.gameId));
+    	this.player = (String) Cache.get("player");
+        return ok(index.render(this.gameId,this.player));
     }
     
     @BodyParser.Of(BodyParser.Json.class)
