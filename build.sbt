@@ -11,7 +11,6 @@ libraryDependencies ++= Seq(
   cache,
   "org.mindrot" % "jbcrypt" % "0.3m",
   "com.typesafe.play" %% "play-mailer" % "3.0.1",
-  "net.vz.mongodb.jackson" % "play-mongo-jackson-mapper_2.10" % "1.1.0",
   filters
 )
 
@@ -23,8 +22,6 @@ resolvers ++= Seq(
 routesGenerator := InjectedRoutesGenerator
 
 lazy val root = (project in file(".")).enablePlugins(play.PlayJava, PlayEbean)
-
-
 
 fork in run := true
 
