@@ -26,13 +26,13 @@ export class Homepage extends React.Component {
         <Row>
           <Col xs={12} md={5}>
             <GameCard title="Warcaby" subtitle="Zagraj z przyjaciółmi w tradycyjną grę logiczną"
-                      link="/checkers" image="images/checkers.jpg" description="Dupadupa" onClick={() => {
+                      link="/checkers" image="images/checkers.jpg" description="Zagraj z przyjaciółmi w tradycyjną grę logiczną" onClick={() => {
                         this.props.toggleDialog('checkersDialog');
                       }} />
           </Col>
           <Col xs={12} md={5}>
             <GameCard title="Kalambury" subtitle="Zagraj z przyjaciółmi w kalambury"
-                      link="/puns" image="images/puns.png" description="Dupadupa" onClick={() => {
+                      link="/puns" image="images/puns.png" description="Zagraj z przyjaciółmi w kalambury" onClick={() => {
                         this.props.toggleDialog('punsDialog');
                       }} />
           </Col>
