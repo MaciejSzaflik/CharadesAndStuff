@@ -50,6 +50,25 @@ public class RoomServices {
 	}
 	
 	public void joinToRoom(Room room, User user) {
+		if (checkUserInRoom(room, user)) {
+			saveGamerInRoom(room, user);
+		}
+	}
+
+	private  boolean checkUserInRoom(Room room, User user) {
+		boolean inRoom = false;
+		Room r = get(room.id);
+
+		for (Gamer g : r.players) {
+			if (g.user.id == user.id) {
+				inRoom = false;
+			}
+		}
+
+		return inRoom;
+	}
+
+	private void saveGamerInRoom(Room room, User user) {
 		Gamer gamer = new Gamer();
 		gamer.dateCreation = new Date();
 		gamer.dateUpdate = new Date();
@@ -76,10 +95,6 @@ public class RoomServices {
 
 		for (Room room : rooms) {
 			if (room.dateUpdate.before(date)) {
-				for (Gamer g : room.players) {
-					gamerProvider.delete(g);
-				}
-
 				provider.delete(room);
 			}
 			else {

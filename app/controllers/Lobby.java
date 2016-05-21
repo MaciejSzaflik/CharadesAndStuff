@@ -93,7 +93,7 @@ public class Lobby extends Controller {
 	public void refreshUser() {
 		User user = User.findByEmail(request().username());
 		service.refreshGamerTime(user);
-		service.refreshGamerTime(user);
+		service.refreshRoomTime(service.getGamer(user).room);
 	}
     
     public void getRooms(String gameName) {
