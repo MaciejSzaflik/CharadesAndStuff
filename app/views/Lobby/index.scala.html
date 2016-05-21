@@ -1,0 +1,43 @@
+@(model: viewModels.LobbyViewModel)
+<head>
+    <meta charset="utf-8" />
+    <title>@Messages("lobby.title") @model.getGame()</title>
+    <script src="@routes.Assets.at("javascripts/jquery/jquery-2.1.0.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("javascripts/lobby/lobby.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("javascripts/bootstrap.js")" type="text/javascript"></script>
+
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/font-awesome.min.css")">
+</head>
+
+<body>
+    <h2>@Messages("lobby.index.message") @model.getGame() @Messages("lobby.index.found") @model.getRooms().size().toString()</h2>
+    <button id="create-room">@Messages("lobby.create.room")</button>
+    <div style="margin-top: 20px">
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <td>Create date</td>
+                    <td>Last update date</td>
+                    <td>Players</td>
+                    <td>Game is running</td>
+                    <td>Join</td>
+                </tr>
+            </thead>
+            <tbody>
+                @for(room <- model.getRooms()) {
+                <tr>
+                    <td></td>
+                    <td>@room.dateCreation </td>
+                    <td>@room.dateUpdate </td>
+                    <td>@room.players.size() / 2 </td>
+                    <td>@room.isRunning </td>
+                    <td></td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>

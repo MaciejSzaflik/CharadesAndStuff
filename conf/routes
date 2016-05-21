@@ -10,6 +10,12 @@ POST    /move                       controllers.CheckersGame.move()
 POST    /initCheckersGame           controllers.CheckersGame.initGame()
 POST	/getGameState				controllers.CheckersGame.getGameState()
 
+GET		/lobby						controllers.Lobby.error()
+GET		/lobby/:gameName			controllers.Lobby.index(gameName : String)
+GET		/room/create/:gameName		controllers.Lobby.createRoom(gameName : String)
+GET		/room/:id					controllers.Lobby.getRoom(id : Long)
+
+
 POST    /login                      controllers.Application.authenticate()
 POST    /checkers                   controllers.Application.goToCheckers()
 GET     /logout                     controllers.Application.logout()

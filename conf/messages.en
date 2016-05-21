@@ -66,3 +66,9 @@ mail.reset.fail.message=You (or someone else) entered this email address when tr
 
 mail.reset.confirm.subject=PlayStartApp - New password
 mail.reset.confirm.message=Hello, <br><br> Your password has been reset.
+
+#Lobby
+lobby.title = Lobby for
+lobby.index.message = Game rooms for
+lobby.index.found = found
+lobby.create.room = Create room

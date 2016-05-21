@@ -19,6 +19,7 @@ import java.util.Date;
 public class User extends Model {
 
     @Id
+    @Column(name="user_id")
     public Long id;
 
     @Constraints.Required
