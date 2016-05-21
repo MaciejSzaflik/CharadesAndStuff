@@ -1,25 +1,19 @@
 import React from 'react';
-import {Card, CardActions, CardHeader, CardMedia, CardText, CardTitle,
-  RaisedButton} from 'material-ui';
-import {Col, Grid, Row} from 'react-flexbox-grid';
-import {Link} from 'react-router';
-import {GameCard} from './';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import * as actionCreators from './home.actions';
 
-export class Home extends React.Component {
-  render() {
-    return (
-      <Grid>
-        <Row>
-          <Col xs={12} md={5}>
-            <GameCard title="Warcaby" subtitle="Zagraj z przyjaciółmi w tradycyjną grę logiczną"
-              link="/checkers" image="images/checkers.jpg" description="Dupadupa" />
-          </Col>
-          <Col xs={12} md={5}>
-            <GameCard title="Kalambury" subtitle="Zagraj z przyjaciółmi w kalambury"
-                      link="/puns" image="images/puns.png" description="Dupadupa" />
-          </Col>
-        </Row>
-      </Grid>
-    )
-  }
+import {Homepage} from './homepage.component';
+
+function mapStateToProps(state) {
+  return {
+    checkersDialog: state.home.checkersDialog,
+    punsDialog: state.home.punsDialog
+  };
 }
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(actionCreators, dispatch);
+}
+
+export const Home = connect(mapStateToProps, mapDispatchToProps)(Homepage);
