@@ -30,8 +30,8 @@
                 @for(room <- model.getRooms()) {
                 <tr>
                     <td></td>
-                    <td>@room.dateCreation </td>
-                    <td>@room.dateUpdate </td>
+                    <td>@room.getDateCreation() </td>
+                    <td>@room.getDateUdaten() </td>
                     <td>@room.players.size() / 2 </td>
                     <td>@room.isRunning </td>
                     <td></td>

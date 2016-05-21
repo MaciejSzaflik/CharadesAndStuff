@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.CascadeType;
 import javax.persistence.Table;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -48,7 +49,19 @@ public class Room extends Model {
     @OneToMany(mappedBy = "room", cascade=CascadeType.ALL)
     public List<Gamer> players;
 
-	@Override
+    private SimpleDateFormat dateFormat;
+
+    public String getDateCreation() {
+        dateFormat = new SimpleDateFormat("hh:mm:ss");
+        return dateFormat.format(dateCreation);
+    }
+
+    public String getDateUdaten() {
+        dateFormat = new SimpleDateFormat("hh:mm:ss");
+        return dateFormat.format(dateUpdate);
+    }
+
+    @Override
 	public String toString() {
 		return "Room [id=" + id + ", dateCreation=" + dateCreation + ", dateUpdate=" + dateUpdate + ", iStuff=" + iStuff
 				+ ", isRunning=" + isRunning + ", gameId=" + gameId + ", chatId=" + chatId + ", params=" + params

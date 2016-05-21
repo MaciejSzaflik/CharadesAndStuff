@@ -16,19 +16,21 @@ public class GamerDao implements Dao<Gamer> {
     
 	@Override
 	public Gamer get(long id) {
-		return find.byId(id);
+		return find
+				.where()
+				.eq("user_id", id)
+				.findUnique();
 	}
 
 	@Override
 	public List<Gamer> get(Boolean value) {
-		return find
-				.findList();
+		return find.findList();
 	}
 
 	public List<Gamer> getByRoom(long id) {
 		return find
 				.where()
-				.eq("roomId", id)
+				.eq("room_id", id)
 				.findList();
 	}
 

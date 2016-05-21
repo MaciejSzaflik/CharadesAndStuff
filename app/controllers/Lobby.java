@@ -1,5 +1,6 @@
 package controllers;
 
+import models.Game;
 import play.cache.Cache;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -24,6 +25,7 @@ import models.Gamer;
 import models.Room;
 import models.User;
 import viewModels.*;
+import javax.persistence.EntityNotFoundException;
 
 public class Lobby extends Controller {
 
@@ -33,13 +35,15 @@ public class Lobby extends Controller {
     	if (!GameNameValidation.Validation(name)) {
     		throw new GameNotFoundException("Not found game");
     	}
-		List<Room> rooms = service.get(GameNameValidation.isStuff(name));
-		LobbyViewModel model = new LobbyViewModel(name, rooms);
-
-    	System.out.print(model.toString());
-
-        return 
-        		ok(index.render(model));
+		try {
+			List<Room> rooms = service.get(GameNameValidation.isStuff(name));
+			LobbyViewModel model = new LobbyViewModel(name, rooms);
+			service.refreshRoomExisting(GameNameValidation.isStuff(name));
+			return ok(index.render(model));
+		}
+		catch (EntityNotFoundException ex) {
+			return index(name);
+		}
     }
     
     public Result createRoom(String name) {
@@ -65,31 +69,46 @@ public class Lobby extends Controller {
     	
     	try {
     		boolean isStuff = GameNameValidation.isStuff(gameName);
-	    	Room room = newRoom(1, 0, isStuff);
-	    	System.out.println(room);
+	    	Room room = newRoom(0, 0, isStuff);
 	    	service.insert(room);
 	    	return true;
     	}
     	catch (Exception ex) {
-    		System.out.println(ex);
+    		System.out.println(ex.getStackTrace());
     	}
     	
     	return false;
     }
     
-    public static void joinToRoom(long id) {
-    	
+    public void joinToRoom(long id) {
+		Room room = service.get(id);
+		User user = User.findByEmail(request().username());
+		service.joinToRoom(room, user);
     }
     
-    public static void refreshRoom() {
-    
+    public void refreshRoom(Boolean isStuff) {
+    	service.refreshRoomExisting(isStuff);
     }
+
+	public void refreshUser() {
+		User user = User.findByEmail(request().username());
+		service.refreshGamerTime(user);
+		service.refreshGamerTime(user);
+	}
     
-    public static void getRooms() {
-    	
-    }
+    public void getRooms(String gameName) {
+		if (!GameNameValidation.isStuff(gameName)) {
+			if (!GameNameValidation.isCharades(gameName)) {
+				throw new GameNotFoundException("Not found game");
+			}
+		}
+
+		List<Room> rooms = service.get(GameNameValidation.isStuff(gameName));
+	}
     
     public Result getRoom(Long id) {
+		Room room = service.get(id);
+
     	return 
     			ok("ok");
     }
@@ -117,15 +136,18 @@ public class Lobby extends Controller {
     	room.id = new Long(0);
     	room.chatId = chatId;
     	room.dateCreation = new Date();
-    	room.dateUpdate =  new Date();
+    	room.dateUpdate = new Date();
     	room.gameId = gameId;
     	room.isRunning = false;
     	room.iStuff = iStuff;
     	room.params = "NO PARAMS";  	
     	room.isRunning = false;
     	room.players = new ArrayList<Gamer>();
-    	
-    	System.out.println(room);
-    	return room;
+		Gamer gamer = new Gamer();
+		gamer.dateUpdate = new Date();
+		gamer.dateCreation = new Date();
+		gamer.user = User.findByEmail(session("email"));
+		room.players.add(gamer);
+		return room;
     }
 }

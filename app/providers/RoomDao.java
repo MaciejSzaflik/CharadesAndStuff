@@ -1,5 +1,6 @@
 package providers;
 
+import java.util.Date;
 import java.util.List;
 
 import com.avaje.ebean.Model;
@@ -16,7 +17,7 @@ public class RoomDao implements Dao<Room> {
     }
     
     public List<Room> get(Boolean iStuff) {
-    	return 
+    	return
     			find
     			.where()
     			.eq("iStuff", iStuff)
@@ -28,10 +29,7 @@ public class RoomDao implements Dao<Room> {
     }
     
 	public void insert(Room room) {
-		System.out.println("Save room in database");
-		System.out.println(room.toString());
 		room.save();
-		System.out.println("Success, yeah! Saved room in database");
 	}
 	
 	public void update(Room room) {

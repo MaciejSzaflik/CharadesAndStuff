@@ -29,15 +29,12 @@ public class Gamer extends Model {
 
     @Formats.DateTime(pattern = "yyyy-MM-dd HH:mm:ss")
     public Date dateUpdate;
-    
-    public Long roomId;
-    public Long userId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="room_id", referencedColumnName="room_id")
     public Room room;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="user_id", referencedColumnName="user_id")
     public User user;
 }
