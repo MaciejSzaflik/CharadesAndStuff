@@ -14,11 +14,13 @@ import play.test.*;
 import static play.test.Helpers.*;
 
 public class GameRoomTests {
+    Room room;
+    
     @Test
     public void GameRoomTests_AddRoom() {
         running(fakeApplication(), new Runnable() {
             public void run() {
-              Room room = getRoom();
+              room = getRoom();
               room.save();
               
               Assert.assertNotNull(room.id);
