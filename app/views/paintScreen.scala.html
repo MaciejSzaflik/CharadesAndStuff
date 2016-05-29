@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  <script src="@routes.Assets.at("javascripts/jquery/jquery-2.1.0.min.js")" type="text/javascript"></script>
+    <style>
+  .overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba(51,51,51,0.7);
+    z-index: 10;
+  }
+    </style>
+  </head>
+  <body>
+  	<div id="paint" class= 'overlay'>
+  		<canvas id="myCanvas"></canvas>
+	</div>
+    <script type="text/javascript" charset="utf-8" src="@routes.Application.wsPaintJs()"></script>
+  </body>
+</html>            

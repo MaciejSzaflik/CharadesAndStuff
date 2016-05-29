@@ -16,6 +16,14 @@ GET		/room/create/:gameName		controllers.Lobby.createRoom(gameName : String)
 GET		/room/:id					controllers.Lobby.getRoom(id : Long)
 
 
+GET 	/assets.javascript.ws.js    controllers.Application.wsJs()
+GET 	/wsInterface                controllers.Application.wsInterface()
+POST    /chat                   	controllers.Application.goToChat()
+
+GET 	/assets.javascript.wsPaint.js    controllers.Application.wsPaintJs()
+GET 	/wsPaintInterface                controllers.Application.wsPaintInterface()
+POST    /paint                   	controllers.Application.goToPaint()
+
 POST    /login                      controllers.Application.authenticate()
 POST    /checkers                   controllers.Application.goToCheckers()
 GET     /logout                     controllers.Application.logout()

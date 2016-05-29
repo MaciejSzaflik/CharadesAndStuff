@@ -28,6 +28,7 @@ project/target
 project/plugins/target
 target
 .target
+public/dist
 
 logs
 
@@ -58,6 +59,7 @@ project/sbt-ui.sbt
 .settings/
 project/eclipse.sbt
 CharadesAndStuff.iml
+public/node_modules
 .idea/
 .idea_modules/
 .sbtserver/connections/
