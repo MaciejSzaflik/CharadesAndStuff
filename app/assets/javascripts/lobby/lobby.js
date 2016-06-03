@@ -1,7 +1,9 @@
 var CREATE_ROOM_URL = "http://localhost:9000/room/create/";
+var ROOM_URL = "http://localhost:9000/room/:id";
+
+var lobby;
 
 $(document).ready(function() {
-    console.log( "ready!" );
     var url = document.URL.split("/");
     var game = url[url.length - 1];
     var isValid = false;
@@ -10,13 +12,17 @@ $(document).ready(function() {
         isValid = true;
     }
 
-    var lobby = new Lobby(game, isValid);
+    lobby = new Lobby(game, isValid);
     var button = document.getElementById("create-room");
     button.addEventListener('click', function() {
         lobby.addRoom();
     }, false);
 
 });
+
+function join(id) {
+	lobby.join(id);
+}
 
 function Lobby(game, isValid) {
     this.game = game;
@@ -26,5 +32,9 @@ function Lobby(game, isValid) {
         $.get(CREATE_ROOM_URL + game, function(data) {
             location.reload();
         });
-    }
+    };
+
+    this.join = function(id) {
+		window.open(ROOM_URL.replace(":id", id));
+    };
 }
