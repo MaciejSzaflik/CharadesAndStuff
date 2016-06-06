@@ -1,6 +1,8 @@
 package controllers;
 
 import models.Game;
+import play.Configuration;
+import play.i18n.Messages;
 import play.cache.Cache;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -28,56 +30,53 @@ import viewModels.*;
 import javax.persistence.EntityNotFoundException;
 
 public class Lobby extends Controller {
-
-	RoomServices service = new RoomServices();
+	private RoomServices service = new RoomServices();
 	
     public Result index(String name) {
-    	if (!GameNameValidation.Validation(name)) {
-    		throw new GameNotFoundException("Not found game");
+    	if (!GameNameValidation.validation(name)) {
+    		throw new GameNotFoundException(Messages.get("lobby.not.found.game"));
     	}
 		try {
-			List<Room> rooms = service.get(GameNameValidation.isStuff(name));
+			List<Room> rooms = service.get(GameNameValidation.isCheckers(name));
 			LobbyViewModel model = new LobbyViewModel(name, rooms);
-			service.refreshRoomExisting(GameNameValidation.isStuff(name));
+			service.refreshRoomExisting(GameNameValidation.isCheckers(name));
 			return ok(index.render(model));
 		}
-		catch (EntityNotFoundException ex) {
+		catch (DatabaseInUseException ex) {
 			return index(name);
 		}
     }
     
     public Result createRoom(String name) {
-    	if (!GameNameValidation.Validation(name)) {
-    		throw new GameNotFoundException("Not found game");
+    	if (!GameNameValidation.validation(name)) {
+    		throw new GameNotFoundException(Messages.get("lobby.not.found.game"));
     	}
     	
-    	if (roomSave(name)) {
-    		return 
-        			ok(insert.render("aaa1"));
+    	Room room = roomSave(name);
+
+    	if (room.id != null || room.id != 0) {
+    		return ok(insert.render(room.id.toString()));
     	}
     	
-    	return 
-    			ok(insert.render("dd1"));	
+    	return ok(insert.render("0"));
     }
     
-    private boolean roomSave(String gameName) {
-    	if (!GameNameValidation.isStuff(gameName)) {
-    		if (!GameNameValidation.isCharades(gameName)) {
-        		throw new GameNotFoundException("Not found game");
-        	}
+    private Room roomSave(String gameName) {
+    	if (!GameNameValidation.validation(gameName)) {
+    		throw new GameNotFoundException(Messages.get("lobby.not.found.game"));
     	}
     	
     	try {
-    		boolean isStuff = GameNameValidation.isStuff(gameName);
-	    	Room room = newRoom(0, 0, isStuff);
+    		boolean iCheckers = GameNameValidation.isCheckers(gameName);
+	    	Room room = newRoom(0, 0, iCheckers);
 	    	service.insert(room);
-	    	return true;
+	    	return room;
     	}
     	catch (Exception ex) {
     		System.out.println(ex.getStackTrace());
     	}
     	
-    	return false;
+    	return new Room();
     }
     
     public void joinToRoom(long id) {
@@ -97,13 +96,13 @@ public class Lobby extends Controller {
 	}
     
     public void getRooms(String gameName) {
-		if (!GameNameValidation.isStuff(gameName)) {
+		if (!GameNameValidation.isCheckers(gameName)) {
 			if (!GameNameValidation.isCharades(gameName)) {
-				throw new GameNotFoundException("Not found game");
+				throw new GameNotFoundException(Messages.get("lobby.not.found.game"));
 			}
 		}
 
-		List<Room> rooms = service.get(GameNameValidation.isStuff(gameName));
+		List<Room> rooms = service.get(GameNameValidation.isCheckers(gameName));
 	}
     
     public Result getRoom(Long id) {
@@ -114,7 +113,6 @@ public class Lobby extends Controller {
     }
     
     public Result error() {
-    	//throw new GameNotFoundException("Not found game");
     	return 
     			ok(error.render());
     }
@@ -131,7 +129,7 @@ public class Lobby extends Controller {
     			ok("ok");
     }
     
-    private Room newRoom(long chatId, long gameId, boolean iStuff) {
+    private Room newRoom(long chatId, long gameId, boolean iCheckers) {
     	Room room = new Room();
     	room.id = new Long(0);
     	room.chatId = chatId;
@@ -139,7 +137,7 @@ public class Lobby extends Controller {
     	room.dateUpdate = new Date();
     	room.gameId = gameId;
     	room.isRunning = false;
-    	room.iStuff = iStuff;
+    	room.isCheckers = iCheckers;
     	room.params = "NO PARAMS";  	
     	room.isRunning = false;
     	room.players = new ArrayList<Gamer>();
@@ -149,5 +147,11 @@ public class Lobby extends Controller {
 		gamer.user = User.findByEmail(session("email"));
 		room.players.add(gamer);
 		return room;
+    }
+    
+    private class DatabaseInUseException extends EntityNotFoundException {
+    	public DatabaseInUseException() { 
+    		super(); 
+    	}
     }
 }

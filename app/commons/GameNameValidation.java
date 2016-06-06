@@ -3,16 +3,16 @@ package commons;
 import enums.GameName;
 
 public class GameNameValidation {
-	public static boolean Validation(String name) {
-		if (name.equals(GameName.charades.toString()) || name.equals(GameName.stuff.toString())) {
+	public static boolean validation(String name) {
+		if (name.equals(GameName.charades.toString()) || name.equals(GameName.checkers.toString())) {
 			return true;
 		}
 		
 		return false;
 	}
 	
-	public static boolean isStuff(String name) {
-		if (name.equals(GameName.stuff.toString())) {
+	public static boolean isCheckers(String name) {
+		if (name.equals(GameName.checkers.toString())) {
 			return true;
 		}
 		

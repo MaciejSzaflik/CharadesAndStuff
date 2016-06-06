@@ -1,26 +1,22 @@
-package providers;
+package repositories;
 
-import java.util.Date;
 import java.util.List;
-
 import com.avaje.ebean.Model;
-
 import models.Room;
-import models.User;
 
-public class RoomDao implements Dao<Room> {
+public class RoomRepository implements RepositoryBase<Room> {
     @SuppressWarnings("unchecked")
     private static Model.Finder<Long, Room> find;
     
-    public RoomDao() {
+    public RoomRepository() {
     	find = new Model.Finder<Long, Room>(Long.class, Room.class);
     }
     
-    public List<Room> get(Boolean iStuff) {
+    public List<Room> get(Boolean isCheckers) {
     	return
     			find
     			.where()
-    			.eq("iStuff", iStuff)
+    			.eq("isCheckers", isCheckers)
     			.findList();
     }
     

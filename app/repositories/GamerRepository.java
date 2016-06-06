@@ -1,4 +1,4 @@
-package providers;
+package repositories;
 
 import java.util.List;
 
@@ -7,10 +7,10 @@ import com.avaje.ebean.Model;
 import models.Gamer;
 import models.Room;
 
-public class GamerDao implements Dao<Gamer> {
+public class GamerRepository implements RepositoryBase<Gamer> {
     private static Model.Finder<Long, Gamer> find;
 
-    public GamerDao() {
+    public GamerRepository() {
     	find = new Model.Finder<Long, Gamer>(Long.class, Gamer.class);
     }
     

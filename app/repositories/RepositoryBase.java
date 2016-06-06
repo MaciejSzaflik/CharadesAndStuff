@@ -1,8 +1,8 @@
-package providers;
+package repositories;
 
 import java.util.List;
 
-public interface Dao<T> {
+public interface RepositoryBase<T> {
 	public T get(long id);
 	public List<T> get(Boolean value);
 	public void insert(T t);

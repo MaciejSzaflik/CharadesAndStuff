@@ -7,9 +7,9 @@ import models.Game;
 import models.Gamer;
 import models.Room;
 import models.User;
-import providers.Dao;
-import providers.GamerDao;
-import providers.RoomDao;
+import repositories.RepositoryBase;
+import repositories.GamerRepository;
+import repositories.RoomRepository;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,36 +17,36 @@ import javax.persistence.Id;
 
 public class RoomServices {
 	
-	private Dao<Room> provider;
-	private Dao<Gamer> gamerProvider;
+	private RepositoryBase<Room> repository;
+	private RepositoryBase<Gamer> gamerRepository;
 
 	public RoomServices() {
-		provider = new RoomDao();
-		gamerProvider = new GamerDao();
+		repository = new RoomRepository();
+		gamerRepository = new GamerRepository();
 	}
 	
 	public Room get(long id) {
-		return provider.get(id);
+		return repository.get(id);
 	}
 
 	public Gamer getGamer(User user) {
-		return gamerProvider.get(user.id);
+		return gamerRepository.get(user.id);
 	}
 
 	public List<Room> get(Boolean isStaff) {
-		return provider.get(isStaff);
+		return repository.get(isStaff);
 	}
 
 	public void insert(Room room) {
-		provider.insert(room);
+		repository.insert(room);
 	}
 	
 	public void update(Room room) {
-		provider.update(room);
+		repository.update(room);
 	}
 	
 	public void delete(Room room) {
-		provider.delete(room);
+		repository.delete(room);
 	}
 	
 	public void joinToRoom(Room room, User user) {
@@ -75,32 +75,32 @@ public class RoomServices {
 		gamer.room = room;
 		gamer.user = user;
 
-		gamerProvider.insert(gamer);
+		gamerRepository.insert(gamer);
 	}
 
 	public void refreshRoomTime(Room room) {
 		room.dateUpdate = new Date();
-		provider.update(room);
+		repository.update(room);
 	}
 
 	public void refreshGamerTime(User user) {
-		Gamer gamer = gamerProvider.get(user.id);
+		Gamer gamer = gamerRepository.get(user.id);
 		gamer.dateUpdate = new Date();
-		gamerProvider.update(gamer);
+		gamerRepository.update(gamer);
 	}
 
 	public void refreshRoomExisting(Boolean isStaff) {
 		Date date = new Date(new Date().getTime() - (1000 * 60));
-		List<Room> rooms = provider.get(isStaff);
+		List<Room> rooms = repository.get(isStaff);
 
 		for (Room room : rooms) {
 			if (room.dateUpdate.before(date)) {
-				provider.delete(room);
+				repository.delete(room);
 			}
 			else {
 				for (Gamer g : room.players) {
 					if (g.dateUpdate.before(date)) {
-						gamerProvider.delete(g);
+						gamerRepository.delete(g);
 					}
 				}
 			}

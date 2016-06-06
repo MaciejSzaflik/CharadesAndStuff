@@ -1,7 +1,5 @@
 package models;
 
-import models.utils.AppException;
-import models.utils.Hash;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
 import com.avaje.ebean.Model;
@@ -32,7 +30,7 @@ public class Room extends Model {
     public Date dateUpdate;
 
     @Constraints.Required
-    public Boolean iStuff;
+    public Boolean isCheckers;
     
     @Constraints.Required
     public Boolean isRunning;
@@ -63,7 +61,7 @@ public class Room extends Model {
 
     @Override
 	public String toString() {
-		return "Room [id=" + id + ", dateCreation=" + dateCreation + ", dateUpdate=" + dateUpdate + ", iStuff=" + iStuff
+		return "Room [id=" + id + ", dateCreation=" + dateCreation + ", dateUpdate=" + dateUpdate + ", iStuff=" + isCheckers
 				+ ", isRunning=" + isRunning + ", gameId=" + gameId + ", chatId=" + chatId + ", params=" + params
 				+ ", players=" + players + "]";
 	}

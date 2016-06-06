@@ -72,3 +72,4 @@ lobby.title = Lobby for
 lobby.index.message = Game rooms for
 lobby.index.found = found
 lobby.create.room = Create room
+lobby.not.found.game = Not found game
