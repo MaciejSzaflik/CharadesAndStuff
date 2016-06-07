@@ -1,4 +1,3 @@
-
 $(function(){
 	var eventCatcher = [];
 	var canvas = document.getElementById('myCanvas');
