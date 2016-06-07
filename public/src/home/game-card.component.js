@@ -14,7 +14,7 @@ const props = {
   onClick: PropTypes.func
 };
 
-export const GameCard = function({title, description, link, image, onClick}) {
+export const GameCard = function({title, description, link,shortCutLink, image, onClick}) {
   const backgroundStyle = {
     background: `url('${image}') center / cover`,
     cursor: 'pointer'
@@ -34,6 +34,11 @@ export const GameCard = function({title, description, link, image, onClick}) {
       <div className="mdl-card__actions">
         <Link to={link}>
           <RaisedButton secondary={true} label="Zagraj" />
+        </Link>
+      </div>
+	  <div className="mdl-card__actions">
+        <Link to={shortCutLink}>
+          <RaisedButton secondary={true} label="Pomiń lobby" />
         </Link>
       </div>
     </div>
