@@ -14,6 +14,9 @@ export class Main extends React.Component {
     }, {
       name: 'Warcaby',
       path: '/checkers'
+    }, {
+      name: "Lobby",
+      path: "/lobby"
     }];
     return (
       <div>
