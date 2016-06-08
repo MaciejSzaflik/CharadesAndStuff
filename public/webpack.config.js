@@ -36,5 +36,8 @@ module.exports = {
     ]
   },
   modulesDirectories: ['./src/shared', './node_modules'],
-  plugins: [HTMLWebpackPluginConfig]
+  plugins: [HTMLWebpackPluginConfig],
+  devServer: {
+    historyApiFallback: true
+  }
 };
