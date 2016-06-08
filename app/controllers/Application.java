@@ -15,48 +15,22 @@ import play.mvc.WebSocket;
 import views.html.index;
 import static play.data.Form.form;
 
-/**
- * Login and Logout.
- * User: yesnault
- */
 public class Application extends Controller {
 
     public static Result GO_HOME = redirect(
             routes.Application.index()
     );
 
-    public static Result GO_DASHBOARD = redirect(
-            routes.Dashboard.index()
-    );
-    
     public static Result GO_CHECKERS = redirect(
             routes.CheckersGame.index()
     );
 
-    /**
-     * Display the login page or dashboard if connected
-     *
-     * @return login page or dashboard
-     */
     public Result index() {
-        // Check that the email matches a confirmed user before we redirect
-        String email = ctx().session().get("email");
-        if (email != null) {
-            User user = User.findByEmail(email);
-            if (user != null && user.validated) {
-                return GO_DASHBOARD;
-            } else {
-                Logger.debug("Clearing invalid session credentials");	
-                session().clear();
-            }
-        }
-
-        return ok(index.render(form(Register.class), form(Login.class), form(GameId.class), form(ChatRedirector.class), form(PaintRedirector.class)));
+        return ok("Ok");
     }
     
     public WebSocket<String> wsInterface(){
         return new WebSocket<String>(){ 
-            // called when websocket handshake is done
             public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out){
                     SimpleChat.start(in, out);
             }
@@ -65,7 +39,6 @@ public class Application extends Controller {
     
     public WebSocket<String> wsPaintInterface(){
         return new WebSocket<String>(){ 
-            // called when websocket handshake is done
             public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out){
                     SimplePaint.start(in, out);
             }
@@ -88,41 +61,7 @@ public class Application extends Controller {
     public Result wsPaintJs() {
         return ok(views.js.wsPaint.render());
     }
-    
 
-    /**
-     * Login class used by Login Form.
-     */
-    public static class Login {
-
-        @Constraints.Required
-        public String email;
-        @Constraints.Required
-        public String password;
-
-        /**
-         * Validate the authentication.
-         *
-         * @return null if validation ok, string with details otherwise
-         */
-        public String validate() {
-
-            User user = null;
-            try {
-                user = User.authenticate(email, password);
-            } catch (AppException e) {
-                return Messages.get("error.technical");
-            }
-            if (user == null) {
-                return Messages.get("invalid.user.or.password");
-            } else if (!user.validated) {
-                return Messages.get("account.not.validated.check.mail");
-            }
-            return null;
-        }
-
-    }
-    
     public static class GameId {
 
     	@Constraints.Required
@@ -147,67 +86,7 @@ public class Application extends Controller {
             return null;
         }
     }
-    
-    
 
-    public static class Register {
-
-        @Constraints.Required
-        public String email;
-
-        @Constraints.Required
-        public String fullname;
-
-        @Constraints.Required
-        public String inputPassword;
-
-        /**
-         * Validate the authentication.
-         *
-         * @return null if validation ok, string with details otherwise
-         */
-        public String validate() {
-            if (isBlank(email)) {
-                return "Email is required";
-            }
-
-            if (isBlank(fullname)) {
-                return "Full name is required";
-            }
-
-            if (isBlank(inputPassword)) {
-                return "Password is required";
-            }
-
-            return null;
-        }
-
-        private boolean isBlank(String input) {
-            return input == null || input.isEmpty() || input.trim().isEmpty();
-        }
-    }
-
-    /**
-     * Handle login form submission.
-     *
-     * @return Dashboard if auth OK o	r login form if auth KO
-     */
-    public Result authenticate() {
-        Form<Login> loginForm = form(Login.class).bindFromRequest();
-        
-        Form<GameId> checkersForm = form(GameId.class).bindFromRequest();
-        Form<ChatRedirector> chatForm = form(ChatRedirector.class).bindFromRequest();
-        Form<PaintRedirector> paintForm = form(PaintRedirector.class).bindFromRequest();
-        Form<Register> registerForm = form(Register.class);
-
-        if (loginForm.hasErrors()) {
-            return badRequest(index.render(registerForm, loginForm,checkersForm,chatForm,paintForm));
-        } else {
-            session("email", loginForm.get().email);
-            return GO_DASHBOARD;
-        }
-    }
-    
     public Result goToCheckers(){
         Form<GameId> checkersForm = form(GameId.class).bindFromRequest();
         
@@ -225,16 +104,4 @@ public class Application extends Controller {
         }
 
     }
-
-    /**
-     * Logout and clean the session.
-     *
-     * @return Index page
-     */
-    public Result logout() {
-        session().clear();
-        flash("success", Messages.get("youve.been.logged.out"));
-        return GO_HOME;
-    }
-
 }
