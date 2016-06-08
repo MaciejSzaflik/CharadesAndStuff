@@ -17,6 +17,9 @@ export class Main extends React.Component {
     }, {
       name: "Lobby",
       path: "/lobby"
+	}, {
+      name: "W przygotowaniu",
+      path: "/inProgress"
     }];
     return (
       <div>

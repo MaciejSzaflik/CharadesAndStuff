@@ -9,6 +9,7 @@ import {Home} from '../home';
 import {history, store} from '../root.store';
 import {Lobby} from '../games/lobby';
 import {Room} from '../games/room';
+import {InProgress} from '../games/inProgress';
 
 export let routes = (
   <Provider store={store}>
@@ -19,6 +20,7 @@ export let routes = (
         <Route path="/checkers" component={Checkers} />
         <Route path="/lobby" component={Lobby} />
         <Route path="/room" component={Room} />
+		<Route path="/inProgress" component={InProgress} />
       </Route>
     </Router>
   </Provider>
