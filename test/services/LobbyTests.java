@@ -16,11 +16,11 @@ public class LobbyTests {
     Room room;
     RoomServices service = new RoomServices();
     
-    private Room getRoom() {
+    private static Room getRoom() {
         Room room = new Room();
         room.dateCreation = new Date();
         room.dateUpdate = new Date();
-        room.iStuff = true;
+        room.isCheckers = true;
         room.isRunning = false;
         room.gameId = new Long(1);
         room.chatId = new Long(1);

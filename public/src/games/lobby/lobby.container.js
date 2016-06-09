@@ -55,15 +55,15 @@ export class Lobby extends React.Component {
 			rooms: [
 				{
 					id: 1,
-					dateCreation: "aaa",
-					dateUpdate: "aaa",
+					dateCreation: new Date(),
+					dateUpdate: new Date(),
 					players: ['dupa'],
 					isRunning: true
 				},
 				{
 					id: 2,
-					dateCreation: "aaa",
-					dateUpdate: "aaa",
+					dateCreation: new Date(),
+					dateUpdate: new Date(),
 					players: ['dupa', 'dupa'],
 					isRunning: false
 				}],
@@ -79,6 +79,18 @@ export class Lobby extends React.Component {
 
 				return hour + ":" + minutes + ":" + seconds;
 
+			},
+			
+			dateFormat: function(date) {
+				var hour = date.getHours();
+				var minutes = date.getMinutes();
+				var seconds = date.getSeconds();
+
+				hour = hour < 9 ? "0" + hour : hour;
+				minutes = minutes < 9 ? "0" + minutes : minutes;
+				seconds = seconds < 9 ? "0" + seconds : seconds;
+
+				return hour + ":" + minutes + ":" + seconds;
 			},
 
 			refresh: function() {
@@ -96,7 +108,14 @@ export class Lobby extends React.Component {
 
 		this.lastColumnValue = this.text.lastUptade.replace("?", this.lobby.getLastUpdate());
 
-		this.tableColumns = [ this.text.columns.id, this.text.columns.dateCreation, this.text.columns.dateUpdate, this.text.columns.Status, this.text.columns.playersLength, this.lastColumnValue];
+		this.tableColumns = [ 
+		                      this.text.columns.id, 
+		                      this.text.columns.dateCreation, 
+		                      this.text.columns.dateUpdate, 
+		                      this.text.columns.status, 
+		                      this.text.columns.playersLength, 
+		                      this.lastColumnValue
+		                      ];
 	}
 
   render() {
@@ -137,8 +156,8 @@ export class Lobby extends React.Component {
               	{this.lobby.rooms.map( (row, index) => (
               			<TableRow key={index}>
 	                        <TableRowColumn>{row.id}</TableRowColumn>
-	                        <TableRowColumn>{row.dateCreation}</TableRowColumn>
-	                        <TableRowColumn>{row.dateUpdate}</TableRowColumn>
+	                        <TableRowColumn>{this.lobby.dateFormat(row.dateCreation)}</TableRowColumn>
+	                        <TableRowColumn>{this.lobby.dateFormat(row.dateUpdate)}</TableRowColumn>
 	                        {row.isRunning ? 
 	                        		<TableRowColumn>{this.text.status.isRunning}</TableRowColumn> :
 	                        		<TableRowColumn>{this.text.status.notRunning}</TableRowColumn>

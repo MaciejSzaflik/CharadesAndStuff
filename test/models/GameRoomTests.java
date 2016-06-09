@@ -32,7 +32,7 @@ public class GameRoomTests {
         Room room = new Room();
         room.dateCreation = new Date();
         room.dateUpdate = new Date();
-        room.iStuff = true;
+        room.isCheckers = true;
         room.isRunning = false;
         room.gameId = new Long(1);
         room.chatId = new Long(1);
