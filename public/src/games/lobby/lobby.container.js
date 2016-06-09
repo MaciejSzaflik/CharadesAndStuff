@@ -4,23 +4,12 @@ import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 import RaisedButton from 'material-ui/RaisedButton';
 
-export class Lobby extends React.Component {
-	constructor() {
-	    super();
+const WEBSOCKET_URL = "ws://localhost:9000/pingWs";
 
-	    this.state = {
-	      fixedHeader: true,
-	      fixedFooter: true,
-	      stripedRows: false,
-	      showRowHover: false,
-	      selectable: false,
-	      multiSelectable: false,
-	      enableSelectAll: false,
-	      deselectOnClickaway: true,
-	      showCheckboxes: false,
-	      height: '300px',
-	    };
-	    
+export class Lobby extends React.Component {
+	constructor(props) {
+	    super(props);
+
 	    this.styles = {
 	    	button: {
 	    		margin: 12,
@@ -116,6 +105,40 @@ export class Lobby extends React.Component {
 		                      this.text.columns.playersLength, 
 		                      this.lastColumnValue
 		                      ];
+		
+		this.lobbyWebSocket = {
+			ws: new WebSocket(WEBSOCKET_URL),
+			init: function() {
+				console.log(this.ws);
+				
+				this.ws.onmessage = function (event) {
+					console.log(JSON.parse(event.data));
+				};
+				
+				this.ws.onopen = function(ws) {
+					ws.send("aa");
+					ws.close();
+				};
+			},
+			send: function() {
+				this.ws.oopen();
+			}
+		};
+		
+	    this.state = {
+	  	      fixedHeader: true,
+	  	      fixedFooter: true,
+	  	      stripedRows: false,
+	  	      showRowHover: false,
+	  	      selectable: false,
+	  	      multiSelectable: false,
+	  	      enableSelectAll: false,
+	  	      deselectOnClickaway: true,
+	  	      showCheckboxes: false,
+	  	      height: '300px',
+	  	    };
+	    
+	    this.lobbyWebSocket.init();
 	}
 
   render() {

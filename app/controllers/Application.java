@@ -1,7 +1,9 @@
 package controllers;
 
+import models.Pinger;
 import models.SimpleChat;
 import models.SimplePaint;
+import models.LobbyWebSocket;
 import models.User;
 import models.utils.AppException;
 import play.Logger;
@@ -9,11 +11,17 @@ import play.cache.Cache;
 import play.data.Form;
 import play.data.validation.Constraints;
 import play.i18n.Messages;
+import play.libs.Akka;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
 import views.html.index;
 import static play.data.Form.form;
+
+import akka.actor.ActorRef;
+import akka.actor.Props;
+import scala.concurrent.duration.Duration;
+import java.util.concurrent.TimeUnit;
 
 public class Application extends Controller {
 
@@ -103,5 +111,13 @@ public class Application extends Controller {
         	return GO_HOME;
         }
 
+    }
+    
+    public WebSocket<String> WebSocket(){
+        return new WebSocket<String>() { 
+            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out){
+                    LobbyWebSocket.start(in, out);
+            }
+        };   
     }
 }

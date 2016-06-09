@@ -7,41 +7,44 @@ import play.libs.F.*;
 import java.nio.channels.ClosedChannelException;
 import java.util.*;
 
-public class SimplePaint{
+public class LobbyWebSocket {
 
-    // collect all websockets here
     private static List<WebSocket.Out<String>> connections = new ArrayList<WebSocket.Out<String>>();
     
-    public static void start(WebSocket.In<String> in, WebSocket.Out<String> out){
-        
+    public static void start(WebSocket.In<String> in, WebSocket.Out<String> out) {
         connections.add(out);
+        
         in.onMessage(new Callback<String>(){
             public void invoke(String event){
                 try {
-					SimplePaint.notifyAll(event);
+					LobbyWebSocket.notifyAll(event);
 				} catch (ClosedChannelException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
             }
         });
-        
+         
         in.onClose(new Callback0(){
             public void invoke(){
                 try {
-					SimplePaint.notifyAll("A connection closed");
+					LobbyWebSocket.notifyAll("A connection closed");
 				} catch (ClosedChannelException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
             }
         });
     }
     
-    // Iterate connection list and write incoming message
-    public static void notifyAll(String message) throws java.nio.channels.ClosedChannelException{
+    public static void notifyAll(String message) throws LobbyWebSocketCloseException {
+    	System.out.println(message);
         for (WebSocket.Out<String> out : connections) {
-        	out.write(message);
+            out.write(message);
         }
+    }
+    
+    private class LobbyWebSocketCloseException extends java.nio.channels.ClosedChannelException {
+    	public LobbyWebSocketCloseException() {
+    		super();
+    	}
     }
 }
