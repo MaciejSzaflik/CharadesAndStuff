@@ -4,15 +4,13 @@ import org.junit.Test;
 
 import models.Gamer;
 import models.Room;
-
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-
 import play.test.*;
 import static play.test.Helpers.*;
 
-public class LobbyTests {
+import java.util.ArrayList;
+import java.util.Date;
+
+public class RoomTest {
     Room room;
     RoomService service = new RoomService();
     
