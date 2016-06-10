@@ -3,24 +3,18 @@ package services;
 import java.util.Date;
 import java.util.List;
 
-import models.Game;
 import models.Gamer;
 import models.Room;
 import models.User;
-import repositories.RepositoryBase;
 import repositories.GamerRepository;
 import repositories.RoomRepository;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-public class RoomServices {
+public class RoomService {
 	
-	private RepositoryBase<Room> repository;
-	private RepositoryBase<Gamer> gamerRepository;
+	private RoomRepository repository;
+	private GamerRepository gamerRepository;
 
-	public RoomServices() {
+	public RoomService() {
 		repository = new RoomRepository();
 		gamerRepository = new GamerRepository();
 	}
@@ -90,7 +84,7 @@ public class RoomServices {
 	}
 
 	public void refreshRoomExisting(Boolean isStaff) {
-		Date date = new Date(new Date().getTime() - (1000 * 60));
+		Date date = new Date(new Date().getTime() - (1000 * 5));
 		List<Room> rooms = repository.get(isStaff);
 
 		for (Room room : rooms) {

@@ -1,4 +1,4 @@
-@(user: User = null, scripts: Html = Html(""))(content: Html)
+@(scripts: Html = Html(""))(content: Html)
 
 <!DOCTYPE html>
 
@@ -29,7 +29,6 @@
                     <li class=""><a href="@routes.Application.index()">Home</a></li>
                 </ul>
             </div>
-            @logged(user)
         </div>
 
         <div class="container">

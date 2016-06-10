@@ -1,4 +1,4 @@
-package models;
+package models.websockets;
 
 import play.mvc.*;
 import play.libs.*;

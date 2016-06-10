@@ -4,23 +4,21 @@ import org.junit.Test;
 
 import models.Gamer;
 import models.Room;
-
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-
 import play.test.*;
 import static play.test.Helpers.*;
 
-public class LobbyTests {
+import java.util.ArrayList;
+import java.util.Date;
+
+public class RoomTest {
     Room room;
-    RoomServices service = new RoomServices();
+    RoomService service = new RoomService();
     
-    private Room getRoom() {
+    private static Room getRoom() {
         Room room = new Room();
         room.dateCreation = new Date();
         room.dateUpdate = new Date();
-        room.iStuff = true;
+        room.isCheckers = true;
         room.isRunning = false;
         room.gameId = new Long(1);
         room.chatId = new Long(1);

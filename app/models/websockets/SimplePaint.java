@@ -1,4 +1,4 @@
-package models;
+package models.websockets;
 
 import play.mvc.*;
 import play.libs.*;
@@ -15,7 +15,6 @@ public class SimplePaint{
     public static void start(WebSocket.In<String> in, WebSocket.Out<String> out){
         
         connections.add(out);
-        System.out.println("Connection started");
         in.onMessage(new Callback<String>(){
             public void invoke(String event){
                 try {
