@@ -7,7 +7,8 @@ import play.cache.Cache;
 import play.mvc.Controller;
 import play.mvc.Result;
 import services.DatabaseOperation;
-import services.RoomServices;
+import services.RoomService;
+import services.UserService;
 import views.html.Lobby.index;
 import views.html.Lobby.error;
 import views.html.Lobby.insert;
@@ -30,7 +31,8 @@ import viewModels.*;
 import javax.persistence.EntityNotFoundException;
 
 public class Lobby extends Controller {
-	private RoomServices service = new RoomServices();
+	private RoomService service = new RoomService();
+	private UserService userService = new UserService();
 	
     public Result index(String name) {
     	if (!GameNameValidation.validation(name)) {
@@ -67,8 +69,8 @@ public class Lobby extends Controller {
     	}
     	
     	try {
-    		boolean iCheckers = GameNameValidation.isCheckers(gameName);
-	    	Room room = newRoom(0, 0, iCheckers);
+    		boolean isCheckers = GameNameValidation.isCheckers(gameName);
+	    	Room room = newRoom(0, 0, isCheckers);
 	    	service.insert(room);
 	    	return room;
     	}
@@ -79,9 +81,9 @@ public class Lobby extends Controller {
     	return new Room();
     }
     
-    public void joinToRoom(long id) {
+    public void joinToRoom(long id, String cookie) {
 		Room room = service.get(id);
-		User user = User.findByEmail(request().username());
+		User user = userService.get(cookie);
 		service.joinToRoom(room, user);
     }
     
@@ -89,8 +91,8 @@ public class Lobby extends Controller {
     	service.refreshRoomExisting(isStuff);
     }
 
-	public void refreshUser() {
-		User user = User.findByEmail(request().username());
+	public void refreshUser(String cookie) {
+		User user = userService.get(cookie);
 		service.refreshGamerTime(user);
 		service.refreshRoomTime(service.getGamer(user).room);
 	}

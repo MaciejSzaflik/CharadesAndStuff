@@ -1,4 +1,4 @@
-package models;
+package models.websockets;
 
 import play.mvc.*;
 import play.libs.*;
@@ -6,6 +6,14 @@ import play.libs.F.*;
 
 import java.nio.channels.ClosedChannelException;
 import java.util.*;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.Gson;
 
 public class LobbyWebSocket {
 
@@ -36,10 +44,19 @@ public class LobbyWebSocket {
     }
     
     public static void notifyAll(String message) throws LobbyWebSocketCloseException {
-    	System.out.println(message);
+		Lobby lobby = new Lobby(message);
+    	System.out.println("lobby: " + toJson(lobby));
+
         for (WebSocket.Out<String> out : connections) {
-            out.write(message);
+            out.write(toJson(lobby));
         }
+    }
+    
+    private static String toJson(Lobby lobby) {
+    	Gson gson = new Gson();
+    	String json = gson.toJson(lobby);
+
+    	return json;
     }
     
     private class LobbyWebSocketCloseException extends java.nio.channels.ClosedChannelException {

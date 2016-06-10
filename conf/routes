@@ -27,4 +27,8 @@ POST    /checkers                   controllers.Application.goToCheckers()
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
-GET     /pingWs                     controllers.Application.WebSocket()
+GET     /ws/lobby                     controllers.Application.LobbyWebSocket()
+GET     /ws/room                      controllers.Application.RoomWebSocket()
+
+GET     /user/get/:name           		controllers.User.get(name)
+GET     /user/create/:name        		controllers.User.create(name)

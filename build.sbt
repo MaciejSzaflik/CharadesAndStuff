@@ -11,7 +11,8 @@ libraryDependencies ++= Seq(
   cache,
   "org.mindrot" % "jbcrypt" % "0.3m",
   "com.typesafe.play" %% "play-mailer" % "3.0.1",
-  filters
+  filters,
+  "com.google.code.gson" % "gson" % "2.2"
 )
 
 resolvers ++= Seq(
@@ -22,6 +23,8 @@ resolvers ++= Seq(
 routesGenerator := InjectedRoutesGenerator
 
 lazy val root = (project in file(".")).enablePlugins(play.PlayJava, PlayEbean)
+
+fork in run := true
 
 fork in run := true
 

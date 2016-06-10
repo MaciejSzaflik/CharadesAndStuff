@@ -1,11 +1,11 @@
 package controllers;
 
 import models.Pinger;
-import models.SimpleChat;
-import models.SimplePaint;
-import models.LobbyWebSocket;
 import models.User;
 import models.utils.AppException;
+import models.websockets.LobbyWebSocket;
+import models.websockets.SimpleChat;
+import models.websockets.SimplePaint;
 import play.Logger;
 import play.cache.Cache;
 import play.data.Form;
@@ -113,10 +113,18 @@ public class Application extends Controller {
 
     }
     
-    public WebSocket<String> WebSocket(){
+    public WebSocket<String> LobbyWebSocket(){
         return new WebSocket<String>() { 
             public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out){
                     LobbyWebSocket.start(in, out);
+            }
+        };   
+    }
+    
+    public WebSocket<String> RoomWebSocket(){
+        return new WebSocket<String>() { 
+            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out){
+                    RoomWebSocket.start(in, out);
             }
         };   
     }

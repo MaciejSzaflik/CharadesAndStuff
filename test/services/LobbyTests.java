@@ -14,7 +14,7 @@ import static play.test.Helpers.*;
 
 public class LobbyTests {
     Room room;
-    RoomServices service = new RoomServices();
+    RoomService service = new RoomService();
     
     private static Room getRoom() {
         Room room = new Room();
