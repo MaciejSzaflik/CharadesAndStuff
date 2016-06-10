@@ -10,6 +10,7 @@ import {history, store} from '../root.store';
 import {Lobby} from '../games/lobby';
 import {Room} from '../games/room';
 import {User} from '../user';
+import {InProgress} from '../games/inProgress';
 
 export let routes = (
   <Provider store={store}>
@@ -21,6 +22,7 @@ export let routes = (
         <Route path="/lobby" component={Lobby} />
         <Route path="/room" component={Room} />
         <Route path="/user" component={User} />
+		<Route path="/inProgress" component={InProgress} />
       </Route>
     </Router>
   </Provider>

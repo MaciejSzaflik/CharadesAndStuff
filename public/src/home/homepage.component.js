@@ -24,16 +24,22 @@ export class Homepage extends React.Component {
     return (
       <Grid>
         <Row>
-          <Col xs={12} md={5}>
+          <Col xs={12} md={4}>
             <GameCard title="Warcaby" subtitle="Zagraj z przyjaciółmi w tradycyjną grę logiczną"
                       link="/checkers" image="images/checkers.jpg" description="Zagraj z przyjaciółmi w tradycyjną grę logiczną" onClick={() => {
                         this.props.toggleDialog('checkersDialog');
                       }} />
           </Col>
-          <Col xs={12} md={5}>
+          <Col xs={12} md={4}>
             <GameCard title="Kalambury" subtitle="Zagraj z przyjaciółmi w kalambury"
                       link="/puns" image="images/puns.png" description="Zagraj z przyjaciółmi w kalambury" onClick={() => {
                         this.props.toggleDialog('punsDialog');
+                      }} />
+          </Col>
+		   <Col xs={12} md={4}>
+            <GameCard title="Kółko i Krzyżyk" subtitle="Czekasz na kogoś? Zagraj z AI w Kółko i Krzyżyk"
+                      link="/inProgress" image="images/tictac.jpg" description="Zagraj z AI" onClick={() => {
+                        
                       }} />
           </Col>
         </Row>
