@@ -52,7 +52,22 @@ export class Lobby extends React.Component {
 					lastUpdate: new Date(),
 					isValid: false,
 					maxPlayer: 2,
-					rooms: [],
+					rooms: 
+					{
+						id: 1,
+	 -					dateCreation: new Date(),
+	 -					dateUpdate: new Date(),
+	 -					players: ['dupa'],
+	 -					isRunning: false
+					},
+					{
+	 -					id: 2,
+	 -					dateCreation: new Date(),
+	 -					dateUpdate: new Date(),
+	 -					players: ['dupa', 'dupa'],
+	 -					isRunning: false
+	 -				}
+					],
 
 					getLastUpdate: function() {
 						var hour = this.lastUpdate.getHours();
@@ -92,7 +107,7 @@ export class Lobby extends React.Component {
 		                           this.state.lastColumnValue];
 	}
 	componentWillMount() {
-		this.loadDataFromServer();
+		//this.loadDataFromServer();
 		var pollInterval = this.props.pollInterval;
 		//window.setInterval(this.loadDataFromServer, pollInterval);
 	}
@@ -168,6 +183,7 @@ export class Lobby extends React.Component {
 				}, 5);
 	}
 	render() {
+		console.log(this.state.lobby);
 		return (
 				<div>
 					<div>

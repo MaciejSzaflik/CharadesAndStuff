@@ -30,6 +30,7 @@ function Lobby(game, isValid) {
 
     this.addRoom = function() {
         $.get(CREATE_ROOM_URL + game, function(data) {
+			window.open(ROOM_URL.replace(":id", data.split(" ")[1]));
             location.reload();
         });
     };

@@ -44,7 +44,7 @@ public class Lobby extends Controller {
 			service.refreshRoomExisting(GameNameValidation.isCheckers(name));
 			return ok(index.render(model));
 		}
-		catch (DatabaseInUseException ex) {
+		catch (EntityNotFoundException ex) {
 			return index(name);
 		}
     }
