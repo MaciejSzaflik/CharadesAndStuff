@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
+import viewModels.Lobby;
 
 public class LobbyWebSocket {
 
@@ -44,7 +45,7 @@ public class LobbyWebSocket {
     }
     
     public static void notifyAll(String message) throws LobbyWebSocketCloseException {
-		Lobby lobby = new Lobby(message);
+    	viewModels.Lobby lobby = new viewModels.Lobby(message);
     	System.out.println("lobby: " + toJson(lobby));
 
         for (WebSocket.Out<String> out : connections) {
@@ -52,7 +53,7 @@ public class LobbyWebSocket {
         }
     }
     
-    private static String toJson(Lobby lobby) {
+    private static String toJson(viewModels.Lobby lobby) {
     	Gson gson = new Gson();
     	String json = gson.toJson(lobby);
 

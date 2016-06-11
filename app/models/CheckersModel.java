@@ -16,7 +16,6 @@ public class CheckersModel extends Model {
     public static ChekersResponse getInitialResponse(String gameId) {
     	ChekersResponse response = decideGameState(gameId);
     	response.saveToDatabase();
-    	
 		return response;
     }
     

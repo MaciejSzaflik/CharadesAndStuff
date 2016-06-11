@@ -146,7 +146,7 @@ public class Lobby extends Controller {
 		Gamer gamer = new Gamer();
 		gamer.dateUpdate = new Date();
 		gamer.dateCreation = new Date();
-		gamer.user = User.findByEmail(session("email"));
+		gamer.user = userService.get("gracz-1");
 		room.players.add(gamer);
 		return room;
     }

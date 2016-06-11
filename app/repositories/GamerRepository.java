@@ -22,7 +22,6 @@ public class GamerRepository implements RepositoryBase<Gamer> {
 				.findUnique();
 	}
 
-	@Override
 	public List<Gamer> get(Boolean value) {
 		return find.findList();
 	}

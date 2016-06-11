@@ -1,6 +1,5 @@
 package controllers;
 
-import models.Pinger;
 import models.User;
 import models.utils.AppException;
 import models.websockets.LobbyWebSocket;
@@ -34,7 +33,7 @@ public class Application extends Controller {
     );
 
     public Result index() {
-        return ok("Ok");
+    	return ok(index.render(form(GameId.class), form(ChatRedirector.class), form(PaintRedirector.class)));
     }
     
     public WebSocket<String> wsInterface(){
@@ -124,7 +123,7 @@ public class Application extends Controller {
     public WebSocket<String> RoomWebSocket(){
         return new WebSocket<String>() { 
             public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out){
-                    RoomWebSocket.start(in, out);
+                    models.websockets.RoomWebSocket.start(in, out);
             }
         };   
     }
