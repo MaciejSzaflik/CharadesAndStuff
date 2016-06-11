@@ -1,0 +1,32 @@
+@(gameIdForm: Form[Application.GameId], chatForm: Form[Application.ChatRedirector], paintForm: Form[Application.PaintRedirector])
+ 
+ 
+ @main(null) {
+ 
+   @wflash()
+   <div class="collg6">
+ 	<div class="well">
+ 	@gameId(gameIdForm)
+ 	</div>
+ 	
+ 	<div class="well">
+ 	@chatRedirector(chatForm)
+ 	</div>
+ 	
+ 	<div class="well">
+ 	@paintRedirector(paintForm)
+ 	</div>
+   </div>
+ 
+   <div class="collg6">
+     <div class="well">
+     </div>
+ 
+     <div class="well">
+     </div>
+     
+ 
+     
+     
+   </div>
+ }
